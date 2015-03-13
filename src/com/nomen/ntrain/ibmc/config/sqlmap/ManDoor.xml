@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!--
+@description 设备管理_门口机管理表
+@author 
+@date 2015-01-20
+-->
+<sqlMap namespace="ManDoor">
+	<typeAlias alias="manDoorBean" type="com.nomen.ntrain.ibmc.bean.ManDoorBean"/>
+	
+	<!-- 查找 设备管理_门口机管理表列表信息 -->
+	<select id="findManDoorList" resultClass="manDoorBean" parameterClass="map">
+		select
+			id, name, facid, confid, doorip, doormac, 
+			gateway, submask, softver, hardver, remark,doortype, optuserid, 
+			(select username from sys_user u where u.id = optuserid) optusername,
+			to_char(createdate,'yyyy-mm-dd')createdate, to_char(updatedate,'yyyy-mm-dd') updatedate
+		from man_door d
+		where 1=1
+    	<isNotEmpty prepend="and" property="showsign">
+    		not exists(select 1 from man_door_house h where h.doorid = d.id and h.deletesign=0)
+    	</isNotEmpty>
+    	<isNotEmpty prepend="and" property="houseid">
+    		not exists(select 1 from man_door_house h where h.doorid = d.id and h.houseid = #houseid#  and h.deletesign=0)
+    	</isNotEmpty>
+    	<isNotEmpty prepend="and" property="id">
+    		id = #id#
+    	</isNotEmpty>
+    	<isNotEmpty prepend="and" property="facid">
+    		facid = #facid#
+    	</isNotEmpty>
+    	<isNotEmpty prepend="and" property="confid">
+    		confid = #confid#
+    	</isNotEmpty>
+    	<isNotEmpty prepend="and" property="doorip">
+    		doorip = #doorip#
+    	</isNotEmpty>
+    	<isNotEmpty prepend="and" property="doormac">
+    		doormac = #doormac#
+    	</isNotEmpty>
+    	<isNotEmpty prepend="and" property="optuserid">
+    		optuserid = #optuserid#
+    	</isNotEmpty>
+    	<isNotEmpty prepend="and" property="keyword">
+    		$fields$ like '%'||#keyword#||'%'
+    	</isNotEmpty>
+        <isNotEmpty property="sortfield">
+        	order by $sortfield$
+    	</isNotEmpty>
+	</select>
+	
+	<!-- 查找设备管理_门口机管理表信息[通过主键ID/门口机mac] -->
+	<select id="findManDoorBean" resultClass="manDoorBean" parameterClass="map">
+		select 
+			id, name, facid, confid, doorip, doormac, 
+			gateway, submask, softver, hardver, remark,doortype, optuserid, 
+			to_char(createdate,'yyyy-mm-dd')createdate, to_char(updatedate,'yyyy-mm-dd')updatedate
+		from man_door
+		where 1=1
+    	<isNotEmpty prepend="and" property="id">
+    		id = #id#
+    	</isNotEmpty>
+    	<isNotEmpty prepend="and" property="doormac">
+    		doormac = #doormac#
+    	</isNotEmpty>
+	</select>
+
+	<!-- 添加设备管理_门口机管理表信息 -->
+	<insert id="insertManDoorBean" parameterClass="manDoorBean" >
+		<selectKey resultClass="java.lang.String" keyProperty="id">
+			select seq_man_door.nextval as id from dual
+		</selectKey>
+			insert into man_door
+			  (id, name, facid, confid, doorip, doormac, gateway, submask, softver, hardver, remark,doortype, optuserid, createdate, updatedate)
+			values
+			  (#id#, #name#, #facid#, #confid#, #doorip#, #doormac#, #gateway#, #submask#, #softver#, #hardver#, #remark#,#doortype#, #optuserid#, sysdate, sysdate)
+	</insert> 
+
+	<!-- 更新设备管理_门口机管理表信息 -->
+	<update id="updateManDoorBean" parameterClass="manDoorBean">
+		update man_door 
+			set updatedate = sysdate
+		<isNotEmpty prepend="," property="name">
+			name = #name#
+		</isNotEmpty>
+		<isNotNull prepend="," property="facid">
+			facid = #facid#
+		</isNotNull>
+		<isNotEmpty prepend="," property="confid">
+			confid = #confid#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="doorip">
+			doorip = #doorip#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="doormac">
+			doormac = #doormac#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="gateway">
+			gateway = #gateway#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="submask">
+			submask = #submask#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="softver">
+			softver = #softver#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="hardver">
+			hardver = #hardver#
+		</isNotEmpty>
+		<isNotNull prepend="," property="remark">
+			remark = #remark#
+		</isNotNull>
+		<isNotEmpty prepend="," property="doortype">
+			doortype = #doortype#
+		</isNotEmpty>
+		where id = #id#
+	</update>
+	
+	<!-- 删除设备管理_门口机管理表信息[根据主键IdStr] -->
+	<delete id="deleteManDoor" parameterClass="string">
+		delete from man_door where id in ($id$)
+	</delete>
+</sqlMap>

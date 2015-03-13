@@ -1,0 +1,2 @@
+使用说明:
+   $(菜单a集合所在的div).tabs({tabId:导航ID, conId:tab内容要加载到的父亲元素)});

@@ -1,0 +1,70 @@
+<purviewList>
+	<!-- 点餐系统 权限列表 -->
+	<mealPurviews>
+		<row value="esta">
+			<firPur>预定管理</firPur>
+			<secPur value="esta_1">预定维护</secPur>
+			<secPur value="esta_2">领取情况登记</secPur>
+		</row>
+		<row value="que_meal">
+			<firPur>查询统计</firPur>
+			<secPur value="que_meal_1">预定统计</secPur>
+			<secPur value="que_meal_2">预定查询</secPur>
+			<secPur value="que_meal_3">投票统计</secPur>
+			<secPur value="que_meal_3">意见汇总</secPur>
+		</row>
+		<row value="org_meal">
+			<firPur>机构人员</firPur>
+			<secPur value="org_meal_1">机构设置</secPur>
+			<secPur value="org_meal_2">人员管理</secPur>
+		</row>
+		<row value="sys_meal">
+			<firPur>系统管理</firPur>
+			<secPur value="sys_meal_1">角色定义</secPur>
+			<secPur value="sys_meal_2">用户角色</secPur>
+		</row>
+		<row value="base_meal">
+			<firPur>基础设置</firPur>
+			<secPur value="base_meal_1">预定配置</secPur>
+			<secPur value="base_meal_2">黑名单管理</secPur>
+			<secPur value="base_meal_3">本周菜谱设置</secPur>
+			<secPur value="base_meal_4">菜肴投票设置</secPur>
+		</row>
+		<row value="code">
+			<firPur>代码设置</firPur>
+			<secPur value="code_meal_1">餐点类别设置</secPur>
+			<secPur value="code_meal_2">餐点名称设置</secPur>
+		</row>
+	</mealPurviews>
+	<!-- 工会网站 权限列表 -->
+	<unionPurviews>
+		<row value="pro">
+			<firPur>合理化建议</firPur>
+<!--			<secPur value="pro_1">员工填报</secPur>-->
+			<secPur value="pro_2">所在部门审核</secPur>
+			<secPur value="pro_3">工会审核</secPur>
+			<secPur value="pro_4">工会主任审核</secPur>
+			<secPur value="pro_5">责任部门审核</secPur>
+		</row>
+		<row value="que_union">
+			<firPur>查询统计</firPur>
+			<secPur value="que_union_1">建议情况查询</secPur>
+			<secPur value="que_union_2">流程情况汇总</secPur>
+			<secPur value="que_union_3">年度汇总统计</secPur>
+		</row>
+		<row value="org_union">
+			<firPur>机构人员</firPur>
+			<secPur value="org_union_1">机构设置</secPur>
+			<secPur value="org_union_2">人员管理</secPur>
+		</row>
+		<row value="sys_union">
+			<firPur>系统管理</firPur>
+			<secPur value="sys_union_1">角色定义</secPur>
+			<secPur value="sys_union_2">用户角色</secPur>
+		</row>
+		<row value="code_union">
+			<firPur>代码设置</firPur>
+			<secPur value="code_union_1">建议类别设置</secPur>
+		</row>
+	</unionPurviews>
+</purviewList>

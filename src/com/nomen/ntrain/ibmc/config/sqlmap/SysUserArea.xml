@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!--
+	@description 系统管理_管理区域配置表
+	@author 郑学仕
+	@date 2015-1-23
+-->
+<sqlMap namespace="SysUserArea">
+	<typeAlias alias="sysUserAreaBean" type="com.nomen.ntrain.ibmc.bean.SysUserAreaBean"/>
+
+	<!-- 查找系统管理_管理区域ID串-->
+	<select id="findSysUserAreaIdstr" resultClass="String" parameterClass="String">
+		select 
+			fun_getNameByIdstr('areaid','select areaid from sys_user_area where userid = $value$')areaIdStr 
+	   from dual
+	</select>
+	
+	<!-- 新增系统管理_管理区域配置-->
+	<insert id="insertSysUserAreaBean" parameterClass="sysUserAreaBean">
+	   insert into sys_user_area
+	   		(userid,areaid,createdate,updatedate)
+	   values
+	  	 	(#userid#,#areaid#,sysdate,sysdate)
+	</insert>
+	
+	<!-- 删除系统管理_管理区域配置-->
+	<delete id="deleteSysUserAreaBean" parameterClass="String">	
+		delete from sys_user_area
+		where userid = #value#
+	</delete>
+</sqlMap>

@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+	@description 基础管理子系统 
+    @author 连金亮
+    @date 2010-12-26
+ -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+	
+	<bean id="synDataDAO" class="com.nomen.ntrain.ibmc.dao.implement.SynDataDAOImpl" parent="nsoftDao"></bean>
+	<bean id="baseDAO" class="com.nomen.ntrain.base.dao.implement.BaseDAOImpl"  parent="nsoftDao"/>  
+	<bean id="baseService" abstract="true" class="com.nomen.ntrain.base.service.implement.BaseServiceImpl">
+		<property name="baseDAO">
+			<ref bean="baseDAO"/>
+		</property> 
+		<property name="synDataDAO">
+			<ref bean="synDataDAO"/>
+		</property> 
+	</bean>
+	
+	<bean id="loginDAO" class="com.nomen.ntrain.base.dao.implement.LoginDAOImpl">
+		<property name="sqlMapClient">
+			<ref bean="sqlMapClient"/>
+		</property>
+	</bean>
+	<bean id="loginService" class="com.nomen.ntrain.base.service.implement.LoginServiceImpl">
+		<property name="loginDAO">
+	    	<ref bean="loginDAO" /> 
+	    </property>
+	    <property name="baseOptLogDAO">
+	    	<ref bean="baseOptLogDAO" /> 
+	    </property>
+	</bean>
+	<bean id="loginAction" class="com.nomen.ntrain.base.action.LoginAction" scope="prototype"> 
+	    <property name="loginService">
+	    	<ref bean="loginService" /> 
+	    </property>
+	    <property name="baseMenuService">
+	    	<ref bean="baseMenuService" /> 
+	    </property>
+	</bean>
+	
+	<!-- 文件类型和大小检测 --> 
+	<bean id="baseUploadFileAction" class="com.nomen.ntrain.base.action.BaseUploadFileAction" scope="prototype"></bean>
+	 
+	 
+	<!-- 菜单设置 -->
+	<bean id="baseMenuDAO" class="com.nomen.ntrain.base.dao.implement.BaseMenuDAOImpl" parent="nsoftDao"></bean>
+	<bean id="baseMenuService" class="com.nomen.ntrain.base.service.implement.BaseMenuServiceImpl" >
+		<property name="baseMenuDAO" ref="baseMenuDAO" />
+	</bean>
+	<bean id="baseMenuAction" class="com.nomen.ntrain.base.action.BaseMenuAction" scope="prototype">
+		<property name="baseMenuService" ref="baseMenuService" />
+	</bean>
+	
+	<!--角色定义-->
+	<bean id="baseRoleDAO" class="com.nomen.ntrain.base.dao.implement.BaseRoleDAOImpl" parent="nsoftDao"></bean>
+	<bean id="baseRoleService" class="com.nomen.ntrain.base.service.implement.BaseRoleServiceImpl">
+		<property name="baseRoleDAO" ref="baseRoleDAO" />
+	</bean>
+	<bean id="baseRoleAction" class="com.nomen.ntrain.base.action.BaseRoleAction" scope="prototype">
+		<property name="baseRoleService" ref="baseRoleService" />
+		<property name="baseMenuService" ref="baseMenuService" />
+	</bean>
+	
+	<!--人员角色-->
+	<bean id="baseRoleUserDAO" class="com.nomen.ntrain.base.dao.implement.BaseRoleUserDAOImpl" parent="nsoftDao"></bean>
+	
+    <!--日志管理-->
+	<bean id="baseOptLogDAO" class="com.nomen.ntrain.base.dao.implement.BaseOptLogDAOImpl" parent="nsoftDao"></bean>
+	<bean id="baseOptLogService" class="com.nomen.ntrain.base.service.implement.BaseOptLogServiceImpl">
+		<property name="baseOptLogDAO" ref="baseOptLogDAO" />
+	</bean>
+	<bean id="baseOptLogAction" class="com.nomen.ntrain.base.action.BaseOptLogAction" scope="prototype">
+		<property name="baseOptLogService" ref="baseOptLogService" />
+		<property name="loginService" ref="loginService" />
+	</bean>
+	<!--错误日志-->
+	<bean id="baseExceptionDAO" class="com.nomen.ntrain.base.dao.implement.BaseExceptionDAOImpl" parent="nsoftDao"></bean>
+	<bean id="baseExceptionService" class="com.nomen.ntrain.base.service.implement.BaseExceptionServiceImpl">
+		<property name="baseExceptionDAO" ref="baseExceptionDAO" />
+	</bean>
+	<bean id="baseExceptionAction" class="com.nomen.ntrain.base.action.BaseExceptionAction" scope="prototype">
+		<property name="baseExceptionService" ref="baseExceptionService" />
+	</bean>
+	
+	<!--全局按钮表-->
+	<bean id="baseElementDAO" class="com.nomen.ntrain.base.dao.implement.BaseElementDAOImpl" parent="nsoftDao"></bean>
+	<bean id="baseElementService" class="com.nomen.ntrain.base.service.implement.BaseElementServiceImpl">
+		<property name="baseElementDAO" ref="baseElementDAO" />
+	</bean>
+	<bean id="baseElementAction" class="com.nomen.ntrain.base.action.BaseElementAction" scope="prototype">
+		<property name="baseElementService" ref="baseElementService" />
+		<property name="loginService" ref="loginService" />
+	</bean>
+	
+</beans>

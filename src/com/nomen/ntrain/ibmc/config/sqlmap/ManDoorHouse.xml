@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!--
+@description 设备管理_门口机关联房产配置表
+@author 
+@date 2015-01-23
+-->
+<sqlMap namespace="ManDoorHouse">
+	<typeAlias alias="manDoorHouseBean" type="com.nomen.ntrain.ibmc.bean.ManDoorHouseBean"/>
+	<typeAlias alias="manDoorBean" type="com.nomen.ntrain.ibmc.bean.ManDoorBean"/>
+	
+	<!-- 通过房产ID和门口机ID查询[非已删除的记录] -->
+	<select id="findDoorHouseBeanById" resultClass="manDoorHouseBean" parameterClass="string">
+		select * from man_door_house h
+		where h.id=#value#
+	</select>
+	
+	<!-- 查找设备管理_门口机管理表信息[通过主键ID/门口机mac] -->
+	<select id="findManHouseLinkDoorList" resultClass="manDoorBean" parameterClass="map">
+		select 
+		  d.id, name, facid, confid, doorip, doormac, gateway, submask,
+		  (select facname from man_factory f where f.id = d.facid) facname,
+		  (select facmodel from man_fac_config fc where fc.id = confid) facmodel,
+		  equipid
+		from man_door d,
+		     man_door_house h
+		where d.id = h.doorid
+		  and h.houseid = #houseid#
+		  and h.deletesign=0
+		<isNotEmpty prepend="and" property="keyword">
+    		  $fields$ like '%'||#keyword#||'%'
+    	</isNotEmpty>
+	</select>
+	
+	<!-- 通过房产关联门口机的记录[通过门口机ID] -->
+	<select id="findDoorHouseBeanByDoorId" resultClass="manDoorHouseBean" parameterClass="string">
+		select * from man_door_house h
+		where h.doorid=#doorid#
+		and h.deletesign=0
+	</select>
+	
+	<!-- 添加设备管理_门口机关联配置表信息 -->
+	<insert id="insertManDoorHouseBean" parameterClass="manDoorHouseBean" >
+		<selectKey resultClass="java.lang.String" keyProperty="id">
+			select seq_man_door_house.nextval as id from dual
+		</selectKey>
+		insert into man_door_house(id, doorid, houseid, createdate, updatedate)
+      	values(#id#, #doorid#, #houseid#, sysdate, sysdate)
+	</insert>
+	
+	<!-- 通过房产ID和门口机ID查询[非已删除的记录] -->
+	<select id="findDoorHouseBean" resultClass="manDoorHouseBean" parameterClass="manDoorHouseBean">
+		select * from man_door_house h
+		where h.houseid = #houseid#
+		and h.doorid=#doorid#
+		and h.deletesign=0
+		and rownum = 1
+	</select>
+	
+	<!--删除设备管理_门口机关联配置表信息  -->
+	<update id="updateManDoorHouseDelSign" parameterClass="map">
+		update man_door_house 
+		set deletesign=1
+		where 1=1
+		<isNotEmpty prepend="and" property="houseid">
+			  houseid = #houseid#
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="doorid">
+			  doorid = #doorid#
+		</isNotEmpty>
+	</update>
+	
+	<!--删除设备管理_门口机关联配置表信息  -->
+	<update id="updateManDoorHouseDelSignByCommid" parameterClass="string">
+		update man_door_house h
+		set deletesign=0
+		where 1=1
+		and exists(
+			select 1 from sys_community c 
+			where (c.id=#value# or c.commpath like '%/'||#value#||'/%')
+			and c.id = h.houseid
+		)
+	</update>
+	
+	<!--更新房屋+门口机对应返回的webservice记录ID  -->
+	<update id="updateDoorHouseEquipId" parameterClass="manDoorHouseBean">
+		update man_door_house 
+		set equipid = #equipid#
+		where houseid = #houseid#
+		and   doorid = #doorid#
+	</update>
+	
+	<!-- 查找设备管理_门口机管理表信息[通过主键ID/门口机mac] -->
+	<select id="findDoorListByHouseId" resultClass="manDoorHouseBean" parameterClass="string">
+		select 
+		  *
+		from man_door_house d
+		where houseid = #value#
+		and deletesign = 0
+	</select>
+	
+	
+	<!--删除房产同门口机配置表[真实删除] -->
+	<delete id="deleteDoorHouseById" parameterClass="string">
+		delete from man_door_house h
+		where id=#value#
+	</delete>
+	
+	<!-- 查找设备管理_门口机管理表信息[通过主键ID/门口机mac] -->
+	<select id="findDoorHouseListByCommId" resultClass="manDoorHouseBean" parameterClass="string">
+		select 
+		  *
+		from man_door_house d
+		where houseid in(
+							select id from sys_community 
+							where commlev=4 
+							and (id=#value# or commpath like '%/'||#value#||'/%')
+					   )
+	</select>
+	
+	
+	<!--删除房产同门口机配置表[真实删除] -->
+	<delete id="deleteDoorHouseByCommId" parameterClass="string">
+		delete from man_door_house h
+		where 1=1
+		and exists(
+			select 1 from sys_community c 
+			where commlev=4
+			and (c.id=#value# or c.commpath like '%/'||#value#||'/%')
+			and c.id = h.houseid
+		)
+	</delete>
+	
+	<!-- 查找统计设备管理_门口机关联房产的个数 -->
+	<select id="findDoorLinkHouseCount" resultClass="string" parameterClass="map">
+		select 
+		  count(1)
+		from man_door_house d
+		where doorid = #doorid#
+		<isNotEmpty prepend="and" property="deletesign">
+			  deletesign = #deletesign#
+		</isNotEmpty>
+	</select>
+	
+	<!-- 删除房产时验证该房产下是否有关联门口机,并且房产下面是否有门卡 -->
+	<select id="findHouseLinkDoorAndCardCount" resultClass="string" parameterClass="string">
+		select 
+			(select count(1) from man_door_house m where m.houseid = #value#)+
+			(select count(1) from man_card c where c.houseid = #value#)
+		from dual
+	</select>
+	
+</sqlMap>

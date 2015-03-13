@@ -1,0 +1,76 @@
+/**
+* 功能描述 选项卡Jquery自定义插件
+* @author 许东雄
+* @date:2014-09-29
+* 参数：	tabId 选项卡 ID
+		conId 内容	ID
+**/
+(function($){
+	$.fn.extend({
+			//插件名称
+			tabs:function(options){
+				//参数和默认值
+				var defaults = {
+					tabId : "",	//选项卡ID
+					conId : "" //内容DIV ID
+				};
+				var options = $.extend(defaults,options);
+				var o = options;
+				$("a",$(this)).bind("click",function(){
+						jQuery.fn.addTab($(this),o.tabId,o.conId);
+				});
+				//绑定选项卡点击事件
+				$("span.tab",o.tabId).live("click",function(){
+					//var objId = $(this).attr("id") + "_content";
+                     var objId = "iframe";
+					 $("#iframe",o.conId).hide();
+					 $("li",o.tabId).removeClass("current");
+					 $("#" + objId).attr("src",$(this).attr("src")).show();
+					 $(this).parent().addClass("current");
+				});
+				//绑定关闭选项卡事件
+				$('span.remove',o.tabId).live('click', function() {
+					var Index = $("li",o.tabId).index($(this).parent());//获取当前关闭选项卡下表
+					var tabId = $(this).parent().find(".tab").attr("id");
+                	$(this).parent().remove();
+					if($("li.current",o.tabId).length == 0 && $("li",o.tabId).length>0){
+						 if(Index>0)Index = Index-1;
+						 var objTab = $("li:eq("+Index+")",o.tabId);
+						 objTab.addClass("current");
+                         $("#iframe").attr("src",$("span:eq("+0+")",objTab).attr("src")).show();
+						 //var objTabId = $(objTab).find("span.tab").attr("id");
+                    	//$("#" + objTabId + "_content").show();
+					}
+					
+				});	
+			}
+		});		
+})(jQuery);
+jQuery.fn.addTab=function(link,objTab,objCon){
+
+	if($("li",objTab).length==10){
+		alert("选项卡打开不能超过十个，请先关掉再打开！");
+		return ;
+	}
+	if($(link).attr("src")==undefined) return;
+	//定位已打开的选项卡
+	if($("#" + $(link).attr("rel")).length != 0){
+		//var objId = $(link).attr("rel") + "_content";
+        var objId = "iframe";
+		$("#iframe",objCon).hide();
+		$("li",objTab).removeClass("current");
+        $("#" + objId).attr("src",$(link).attr("src")).show();
+		$("#"+$(link).attr("rel")).parent().addClass("current");
+		return;
+	}
+	$("li",objTab).removeClass("current");
+    $("#iframe",objCon).hide();
+	var title=$(link).html();
+	if($(link).html().length>4){
+		title = $(link).html().substr(0,4)+"...";	
+	}
+	objTab.append("<li class='current'><span class='tab' id='" +$(link).attr("rel") + "' src=\""+$(link).attr("src")+"\" title='"+$(link).html()+"'>" + title + "</span><span class='remove'>&nbsp;</span></li>");
+	//objCon.append("<iframe name=\"iframe\" id='" +$(link).attr("rel") + "_content' src=\""+$(link).attr("src")+"\" frameborder=\"0\" scrolling=\"no\" height=\"100%\" width=\"100%\"></iframe> ");
+     $("#iframe",objCon).attr("src",$(link).attr("src")).show();
+	 //$("#" + $(link).attr("rel") + "_content").show();
+}

@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!--
+@description 系统管理_社区/房产表临时表
+@author 
+@date 2015-03-03
+-->
+<sqlMap namespace="SysCommunityTemp">
+	<typeAlias alias="sysCommunityBean" type="com.nomen.ntrain.ibmc.bean.SysCommunityBean"/>
+	
+	<!-- 删除操作人员导入的房产信息 -->
+	<delete id="deleteSysCommTempData" parameterClass="map">
+		delete from sys_community_temp t
+        where t.optuserid = #optuserid#
+          and exists 
+              (select 1 from sys_community_temp t2 
+              where t2.optuserid = #optuserid# 
+              start with t2.parentid = #parentid# 
+              connect by prior t2.id = t2.parentid
+              )
+	</delete>
+	
+	<!-- 新增房产信息临时表 -->
+	<insert id="insertSysCommTempBean" parameterClass="sysCommunityBean">
+		<selectKey resultClass="java.lang.String" keyProperty="id">
+			select seq_sys_community_temp.nextval as id from dual
+		</selectKey>
+		insert into sys_community_temp
+		  (id, parentid, commdetail, commname, ownerid, commtype, commlev, usesign, 
+		  commorder, remark, commzip, commpath, createdate, updatedate, telephone, 
+		  optuserid, owneridcard, ownername)
+		values
+		  (#id#, #parentid#, #commdetail#, #commname#, #ownerid#, #commtype#, #commlev#, #usesign#, 
+		  #commorder#, #remark#, #commzip#, #commpath#, sysdate, #updatedate#, #telephone#,
+		  #optuserid#, #owneridcard#, #ownername#)
+	</insert>
+	
+	<!-- 验证临时导入房产数据的有效性 -->   
+    <parameterMap class="HashMap" id="updateSysCommTempDataValidM">
+    	<parameter property="optuserid" javaType="string" jdbcType="vachar" />
+    	<parameter property="parentid" javaType="string" jdbcType="vachar" />
+    </parameterMap>
+	<procedure id="updateSysCommTempData" parameterMap="updateSysCommTempDataValidM">  
+    	{call ibmc_syn_community.update_syscommtempdata(?,?)}
+	</procedure>
+	
+	<!-- 查询此次导入中数据中有效性判断中是否有错误的数据 -->
+	<select id="findSysCommTempErrorCount" parameterClass="map" resultClass="string">
+		select nvl(count(1),0) from sys_community_temp t
+		where t.errorflag = #errorflag#
+		  and t.optuserid = #optuserid# 
+		  start with parentid = #parentid#
+		connect by prior id = parentid
+	</select>
+	
+	<!-- 保存临时表中的数据导入到正式表中 -->   
+    <parameterMap class="HashMap" id="saveSysCommTempDataIntoRegularM">
+    	<parameter property="optuserid" javaType="string" jdbcType="vachar" />
+    	<parameter property="parentid" javaType="string" jdbcType="vachar" />
+    </parameterMap>
+	<procedure id="saveSysCommTempDataIntoRegular" parameterMap="saveSysCommTempDataIntoRegularM">  
+    	{call ibmc_syn_community.save_syscommtempdataintoreg(?,?)}
+	</procedure>
+	
+	<!-- 查询导入到临时表中的房产信息数据列表[预览页面中] -->
+	<select id="findSysCommTempList" resultClass="sysCommunityBean" parameterClass="map">
+		select 
+			  id, parentid, commdetail, commname, ownerid, commtype, commlev, usesign, 
+			  commorder, remark, commzip, commpath, to_char(createdate,'yyyy-mm-dd')createdate, 
+			  to_char(updatedate,'yyyy-mm-dd')updatedate, deletesign, telephone,
+			  optuserid, errorflag, errorstr, owneridcard, ownername,
+			  (select count(1) from sys_community_temp p where p.parentid = t.id and p.optuserid = #optuserid# and p.deletesign=0) childnum
+		from sys_community_temp t
+		where optuserid = #optuserid#
+		start with parentid = #parentid#
+    	<isNotEmpty prepend="and" property="keyword">
+    		$fields$ like '%'||#keyword#||'%'
+    	</isNotEmpty>
+		connect by prior id = parentid 
+        <isNotEmpty property="sortfield">
+        	order siblings by $sortfield$
+    	</isNotEmpty>
+	</select>
+	
+	<!-- 仅查询此次房产导入中房产信息 -->
+	<select id="findSysCommTempHouseList" resultClass="sysCommunityBean" parameterClass="map">
+		select 
+			  id, parentid, commdetail, commname, ownerid, commtype, commlev, usesign, 
+			  commorder, remark, commzip, commpath, to_char(createdate,'yyyy-mm-dd')createdate, 
+			  to_char(updatedate,'yyyy-mm-dd')updatedate, deletesign, telephone,
+			  optuserid, errorflag, errorstr, owneridcard, ownername,
+			  (select count(1) from sys_community_temp p where p.parentid = t.id and p.optuserid = #optuserid# and p.deletesign=0) childnum
+		from sys_community_temp t
+		where optuserid = #optuserid#
+		  and parentid = #parentid#
+    	<isNotEmpty prepend="and" property="keyword">
+    		$fields$ like '%'||#keyword#||'%'
+    	</isNotEmpty>
+        <isNotEmpty property="sortfield">
+        	order by $sortfield$
+    	</isNotEmpty>
+	</select>
+	
+	<!-- 查询统计此次导入房产中信息列表 -->
+	
+</sqlMap>

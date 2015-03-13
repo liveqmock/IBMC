@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+    "http://struts.apache.org/dtds/struts-2.0.dtd">
+<!--
+@description 系统管理_用户表
+@author ljl
+@date 2015-1-18
+-->
+<struts>
+    <package name="SysUser" extends="nsoft-ic" namespace="/Sys/User">
+     	<!-- ==========================    JQuery相关     ============================ -->
+     	<!-- 系统管理_用户表 列表信息 -->
+    	<action name="listSysUserByJq" class="sysUserAction" method="listSysUserByJq"></action>
+    	<!-- 系统管理_用户表 删除 -->
+   		<action name="deleteSysUserByJq" class="sysUserAction" method="deleteSysUserByJq"></action>
+   		 
+   		<!-- 排序号 -->
+   		<action name="findSysUserOrderByJq" class="sysUserAction" method="findSysUserOrderByJq"></action>
+   		<!-- 验证密码是否一致 -->
+   		<action name="chkSysUserPwdIsTrueByJq" class="sysUserAction" method="chkSysUserPwdIsTrueByJq"></action>
+   		<!-- 保存当前密码修改操作 -->
+   		<action name="saveSysUserPwdByJq" class="sysUserAction" method="saveSysUserPwdByJq"></action>
+   		<!-- 初始化当前密码修改操作 -->
+   		<action name="saveSysUserInitPwdByJq" class="sysUserAction" method="saveSysUserInitPwdByJq"></action>
+   		
+     	
+     	<!-- ==============================   用户管理表  ================================  -->
+       
+        <!-- 跳转到[用户管理]列表页面 -->
+    	<action name="toforwardsysuser" class="sysUserAction" method="toForwardSysUser">
+    		<result name="success">/Ibmc/System/User_List.jsp</result>	
+		</action>
+		
+		<!-- 系统管理_用户表 新增、修改[跳转] -->
+    	<action name="setsysuser" class="sysUserAction" method="setSysUser">
+    		<result name="success">/Ibmc/System/User_Set.jsp</result>
+		</action>
+
+		<!-- 系统管理_用户表 新增/修改[保存]-->
+    	<action name="savesysuser" class="sysUserAction" method="saveSysUser">
+    		<result name="success">/Ibmc/System/User_List.jsp</result>
+		</action>
+		
+		<!-- 系统管理_用户表 密码修改[跳转] -->
+    	<action name="setsysuserpwd" class="sysUserAction" method="setSysUserPwd">
+    		<result name="success">/Ibmc/System/User_PwdSet.jsp</result>
+		</action>
+
+	</package>
+</struts>
+

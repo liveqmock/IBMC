@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 
+	@description 莆田岗位培训_操作日志
+    @author 郑学仕
+    @date 2014-11-20
+ -->
+ <sqlMap namespace="BaseOptLog">
+     <typeAlias alias="baseOptLogBean" type="com.nomen.ntrain.base.bean.BaseOptLogBean" />
+     <!-- 查询列表 -->
+     <select id="findBaseOptLogList" parameterClass="map" resultClass="baseOptLogBean">
+        SELECT 
+        	ID,OPTDEPTID,OPTDEPTNAME,OPTUSERNAME,OPTUSERID,
+        	TO_CHAR(OPTTIME,'YYYY-MM-DD HH24:MI') OPTTIME,
+        	OPTTYPE,OPTREMARK,INTFLAG
+        FROM BASE_OPTLOG
+        WHERE 1=1
+        <isNotEmpty prepend="AND" property="deptid">
+            OPTDEPTID=#deptid#
+        </isNotEmpty>
+        <isNotEmpty prepend="AND" property="keyword">
+            $fields$ LIKE '%'||#keyword#||'%'
+        </isNotEmpty>
+         <isNotEmpty prepend="AND" property="opttype">
+            OPTTYPE=#opttype#
+        </isNotEmpty>
+        <isNotEmpty prepend="AND" property="intflag">
+            INTFLAG=#intflag#
+        </isNotEmpty>
+        ORDER BY OPTTIME DESC
+     </select>
+     
+     <!-- 查询纪录 -->
+     <select id="findBaseOptLogById" parameterClass="string" resultClass="baseOptLogBean">
+        SELECT 
+        	ID,OPTDEPTID,OPTDEPTNAME,OPTUSERNAME,OPTUSERID,ARGVALUES,
+        	TO_CHAR(OPTTIME,'YYYY-MM-DD HH24:MI') OPTTIME,
+        	OPTTYPE,OPTREMARK
+        FROM BASE_OPTLOG
+        WHERE ID=#id#
+     </select>
+    
+     <!-- 添加 -->
+     <insert id="insertBaseOptLog" parameterClass="baseOptLogBean" >
+        <selectKey resultClass="java.lang.String" keyProperty="id">
+            SELECT SEQ_BASE_OPTLOG.NEXTVAL AS ID FROM DUAL
+        </selectKey>
+        <![CDATA[
+            INSERT INTO BASE_OPTLOG (ID,OPTREMARK,OPTTYPE,ARGVALUES,OPTUSERID,OPTDEPTID,OPTUSERNAME,OPTDEPTNAME,INTFLAG,OPTTIME)
+            VALUES(#id#,#optremark#,#opttype#,#argvalues#,#optuserid#,#optdeptid#,#optusername#,#optdeptname#,#intflag#,SYSDATE)
+        ]]>
+     </insert>
+      
+      <!-- 删除 -->
+     <delete id="deleteBaseOptLog" parameterClass="java.lang.String">
+     <![CDATA[
+        DELETE FROM BASE_OPTLOG WHERE ID=#id#
+     ]]>
+     </delete>
+    
+ </sqlMap>

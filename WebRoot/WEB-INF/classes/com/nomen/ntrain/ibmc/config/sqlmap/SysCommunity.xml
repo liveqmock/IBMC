@@ -1,0 +1,377 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!--
+@description 系统管理_社区/房产表
+@author ljl
+@date 2015-01-20
+-->
+<sqlMap namespace="SysCommunity">
+	<typeAlias alias="sysCommunityBean" type="com.nomen.ntrain.ibmc.bean.SysCommunityBean"/>
+	<!-- 通过区域条件获取社区（村）列表  -->
+	<select id="findSysCommunityBeanById" resultClass="sysCommunityBean" parameterClass="string">
+		SELECT 
+			  ID, PARENTID, COMMDETAIL, COMMNAME, OWNERID, 
+			  (SELECT NAME FROM MAN_PEO P WHERE P.ID = OWNERID) OWNERNAME ,
+			  COMMTYPE, COMMLEV, USESIGN, COMMORDER, REMARK, 
+			  (SELECT CX.COMMNAME FROM SYS_COMMUNITY CX WHERE CX.ID = SC.PARENTID) PARENTNAME,
+			  COMMZIP, COMMPATH
+		FROM SYS_COMMUNITY SC
+		where SC.ID=#value#
+	</select>
+	
+	<!-- 系统管理=社区管理[通过区域条件获取社区/（村）列表]-->
+	<select id="findVillageListByScope" resultClass="sysCommunityBean" parameterClass="map">
+		SELECT 
+			  ID, PARENTID, COMMDETAIL, COMMNAME, OWNERID, 
+			  COMMTYPE, COMMLEV, USESIGN, COMMORDER, REMARK, 
+			  COMMZIP, COMMPATH,
+			  (SELECT CX.COMMNAME FROM SYS_COMMUNITY CX WHERE CX.ID = C.PARENTID) PARENTNAME
+		FROM SYS_COMMUNITY C
+		WHERE C.COMMLEV = 3 
+		AND   C.DELETESIGN=0
+    	<isNotEmpty prepend="" property="commpath">
+    		AND	C.COMMPATH LIKE #commpath#||'/%'
+    	</isNotEmpty>
+    	<isEmpty prepend="" property="usesign">
+    		AND C.USESIGN=1
+    	</isEmpty>
+    	<isNotEmpty prepend="" property="usesign">
+    		AND C.USESIGN=#usesign#
+    	</isNotEmpty>
+    	<isNotEmpty prepend="and" property="keyword">
+    		$fields$ LIKE '%'||#keyword#||'%'
+    	</isNotEmpty>
+    	<isEmpty prepend="" property="commpath">
+			START WITH C.ID IN(
+			   SELECT A.AREAID FROM SYS_USER_AREA A WHERE A.USERID = #userid#
+			   AND EXISTS (
+			       SELECT 1 FROM SYS_COMMUNITY C2
+			       WHERE C2.COMMLEV = #levsign# 
+			       AND C2.ID = A.AREAID
+			   )
+			)
+			CONNECT BY PRIOR C.ID = C.PARENTID
+    	</isEmpty>
+	</select>
+	
+	<!-- 房产管理=房产信息维护[通过区域条件获取房产 列表]-->
+	<select id="findHouseListByScope" resultClass="sysCommunityBean" parameterClass="map">
+		SELECT 
+			  ID, PARENTID, COMMDETAIL, COMMNAME, OWNERID, 
+			  COMMTYPE, COMMLEV, USESIGN, COMMORDER, REMARK, 
+			  COMMZIP, COMMPATH,
+		  	 (SELECT NAME FROM MAN_PEO P WHERE P.ID = OWNERID) OWNERNAME ,
+		  	 (
+		  		SELECT COUNT(1) FROM SYS_COMMUNITY P 
+		  		WHERE P.PARENTID = C.ID AND P.DELETESIGN=0
+		  	  ) CHILDNUM ,
+			 (SELECT CX.COMMNAME FROM SYS_COMMUNITY CX WHERE CX.ID = C.PARENTID) PARENTNAME
+		FROM SYS_COMMUNITY C
+		WHERE C.COMMLEV = 4
+		AND   C.DELETESIGN=0
+    	<isNotEmpty prepend="" property="commpath">
+    		AND	C.COMMPATH LIKE #commpath#||'/%'
+    	</isNotEmpty>
+    	<isEmpty prepend="" property="usesign">
+    		AND C.USESIGN=1
+    	</isEmpty>
+    	<isNotEmpty prepend="" property="usesign">
+    		AND C.USESIGN=#usesign#
+    	</isNotEmpty>
+    	<isNotEmpty prepend="and" property="keyword">
+    		<isEqual property="fields" compareValue="ownername">
+    			AND EXISTS(
+    				SELECT 1 FROM MAN_PEO P WHERE P.ID = C.OWNERID
+    				AND (P.NAME LIKE '%'||LOWER(#keyword#)||'%' or P.PYSZM LIKE '%'||LOWER(#keyword#)||'%')
+    			)
+    		</isEqual>
+    		<isNotEqual property="fields" compareValue="ownername">
+    			$fields$ LIKE '%'||#keyword#||'%'
+    		</isNotEqual>
+    	</isNotEmpty>
+    	<isEmpty prepend="" property="commpath">
+			START WITH C.ID IN(
+			   SELECT A.AREAID FROM SYS_USER_AREA A WHERE A.USERID = #userid#
+			   AND EXISTS (
+			       SELECT 1 FROM SYS_COMMUNITY C2
+			       WHERE C2.COMMLEV = #levsign# 
+			       AND C2.ID = A.AREAID
+			   )
+			)
+			CONNECT BY PRIOR C.ID = C.PARENTID
+    	</isEmpty>
+	</select>
+	
+	<!-- 新增 -->
+	<insert id="insertSysCommunityBean" parameterClass="sysCommunityBean" >
+		<selectKey resultClass="java.lang.String" keyProperty="id">
+			SELECT SEQ_SYS_COMMUNITY.NEXTVAL AS ID FROM DUAL
+		</selectKey>
+		INSERT INTO SYS_COMMUNITY
+		  (ID, PARENTID, COMMDETAIL, COMMNAME, OWNERID, COMMTYPE, COMMLEV, USESIGN, COMMORDER, REMARK, COMMZIP, COMMPATH, CREATEDATE, UPDATEDATE)
+		VALUES
+		  (#id#,#parentid#,#commdetail#,#commname#,#ownerid#,#commtype#,#commlev#,#usesign#,#commorder#,#remark#,#commzip#,#commpath#,SYSDATE, NULL)
+	</insert> 
+
+	<!-- 修改 -->
+	<update id="updateSysCommunityBean" parameterClass="sysCommunityBean">
+		UPDATE SYS_COMMUNITY 
+			SET UPDATEDATE = SYSDATE,
+				TASKSIGN =0
+		<isNotEmpty prepend="," property="parentid">
+			PARENTID = #parentid#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="commdetail">
+			COMMDETAIL = #commdetail#
+		</isNotEmpty>
+		<isNotNull prepend="," property="commname">
+			COMMNAME = #commname#
+		</isNotNull>
+		<isNotEmpty prepend="," property="ownerid">
+			OWNERID = #ownerid#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="commtype">
+			COMMTYPE = #commtype#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="commlev">
+			COMMLEV = #commlev#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="commorder">
+			COMMORDER = #commorder#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="commzip">
+			COMMZIP = #commzip#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="remark">
+			REMARK = #remark#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="commpath">
+			COMMPATH = #commpath#
+		</isNotEmpty>
+		WHERE ID = #id#
+	</update>
+	
+	
+	<!-- 修改路径 -->
+	<update id="updateSysCommunityPath" parameterClass="sysCommunityBean">
+		UPDATE SYS_COMMUNITY 
+			SET UPDATEDATE = SYSDATE,
+			COMMPATH = #commpath#
+		WHERE ID = #id#
+	</update>
+
+	<!-- 删除(虚拟删除) -->
+	<update id="updateSysCommDelSignByCommId" parameterClass="string">
+		UPDATE SYS_COMMUNITY
+		SET DELETESIGN=1
+		WHERE COMMPATH LIKE '%/'||#value#||'/%'
+		OR ID = #value#
+	</update>
+	
+	<!-- 修改启用/禁用状态 -->
+	<update id="updateSysCommunityUseSign" parameterClass="sysCommunityBean">
+		UPDATE SYS_COMMUNITY 
+			SET UPDATEDATE = SYSDATE,
+			USESIGN=#usesign#
+		WHERE ID = #id#
+	</update>
+	
+	<!-- 查询人员可管理的区域列表 -->
+	<select id="findCommRegionListByMap" resultClass="sysCommunityBean" parameterClass="map">
+		SELECT 
+			*
+        FROM
+        (
+            SELECT * FROM SYS_COMMUNITY SC1 
+            WHERE  1=1
+			AND    DELETESIGN=0
+            <isNotEmpty prepend="" property="maxlev">
+					<![CDATA[
+						AND (SC1.COMMLEV <= $maxlev$ AND SC1.COMMLEV>=0)
+					]]>
+			</isNotEmpty>
+         ) ALLNODE
+         <isNotEmpty prepend="" property="levsign">
+         START WITH ALLNODE.ID IN
+            (
+                  SELECT SC2.ID
+                  FROM SYS_COMMUNITY SC2
+                  WHERE SC2.COMMLEV=#levsign#
+                  AND EXISTS (
+                                SELECT 1
+                                FROM SYS_USER_AREA A
+                                WHERE A.USERID = #userid#
+                                AND A.AREAID = SC2.ID
+                              )
+            )
+          </isNotEmpty>
+          CONNECT BY PRIOR ALLNODE.ID = ALLNODE.PARENTID
+	</select>
+	
+	<!-- 查询区域列表（无条件过滤） -->
+	<select id="findSysCommunityList" resultClass="sysCommunityBean" parameterClass="map">
+		SELECT 
+			T.*,
+			(
+				SELECT COUNT(1) FROM SYS_COMMUNITY T2 
+				WHERE T2.PARENTID=T.ID AND T2.DELETESIGN=0
+			) CHILDNUM
+        FROM 
+           (
+           	SELECT * FROM SYS_COMMUNITY 
+           	WHERE USESIGN=1 
+           	AND DELETESIGN=0 
+            <isNotEmpty prepend="" property="maxlev">
+				<![CDATA[
+					AND COMMLEV <= $maxlev$
+				]]>
+			</isNotEmpty>
+           ) T
+         <isNotEmpty prepend="" property="querytree">
+			<isEqual property="querytree" compareValue="1">
+		        START WITH PARENTID=#parentid#
+		        CONNECT BY PRIOR ID = PARENTID
+			</isEqual>
+			<isNotEqual property="querytree" compareValue="1">
+		        WHERE PARENTID=#parentid#
+			</isNotEqual>
+		</isNotEmpty>
+	</select>
+	
+	<!-- 查询社区房产下一个排序号 -->
+	<select id="findSysCommunityNextOrder" parameterClass="map" resultClass="string">
+	    SELECT COUNT(1)+1 FROM SYS_COMMUNITY 
+	    WHERE PARENTID=#parentid# 
+	    AND DELETESIGN=0
+	    <isNotEmpty prepend="and" property="ownerid">
+	    	OWNERID = #ownerid#
+	    </isNotEmpty>
+	</select>
+	
+	<!-- 通过房产查询房产下面的房间列表-->
+	<select id="findManRoomListByHouseId" resultClass="sysCommunityBean" parameterClass="map">
+		SELECT 
+			  ID, PARENTID, COMMDETAIL, COMMNAME, OWNERID, 
+			  COMMTYPE, COMMLEV, USESIGN, COMMORDER, REMARK,
+			  COMMZIP, COMMPATH
+		FROM SYS_COMMUNITY SC
+		where SC.PARENTID=#parentid#
+		AND   SC.COMMLEV = 5
+		AND   SC.DELETESIGN=0
+		<isNotEmpty prepend="and" property="usesign">
+			USESIGN = #usesign#
+		</isNotEmpty>
+		<isEmpty prepend="and" property="usesign">
+			USESIGN = 1
+		</isEmpty>
+    	<isNotEmpty prepend="and" property="keyword">
+    		$fields$ LIKE '%'||#keyword#||'%'
+    	</isNotEmpty>
+        <isNotEmpty property="sortfield">
+        	ORDER BY $sortfield$
+    	</isNotEmpty>
+	</select>
+	
+	
+	<!-- 设备管理=门口机管理 [通过区域条件获取社区/（村）/房产关联的门口机 列表]-->
+	<select id="findHouseLinkDoorList" resultClass="sysCommunityBean" parameterClass="map">
+		SELECT 
+			  ID, PARENTID, COMMDETAIL, COMMNAME, OWNERID, 
+			  COMMTYPE, COMMLEV, USESIGN, COMMORDER, REMARK, 
+			  COMMZIP, COMMPATH,
+		  	 (SELECT NAME FROM MAN_PEO P WHERE P.ID = OWNERID) OWNERNAME ,
+			 (SELECT CX.COMMNAME FROM SYS_COMMUNITY CX WHERE CX.ID = C.PARENTID) PARENTNAME,
+			 (SELECT COUNT(1) FROM MAN_DOOR_HOUSE D WHERE D.HOUSEID = C.ID AND D.DELETESIGN=0) DOORCOUNT
+		FROM SYS_COMMUNITY C
+		WHERE C.COMMLEV = 4 
+		AND C.USESIGN = 1
+		AND C.DELETESIGN=0
+    	<isNotEmpty prepend="" property="commpath">
+    		AND	C.COMMPATH LIKE #commpath#||'/%'
+    	</isNotEmpty>
+    	<isNotEmpty prepend="and" property="keyword">
+    		$fields$ LIKE '%'||#keyword#||'%'
+    	</isNotEmpty>
+    	<isEmpty prepend="" property="commpath">
+			START WITH C.ID IN(
+			   select A.AREAID FROM SYS_USER_AREA A WHERE A.USERID = #userid#
+			   AND EXISTS (
+			       SELECT 1 FROM SYS_COMMUNITY C2
+			       WHERE C2.COMMLEV = #levsign# 
+			       AND C2.ID = A.AREAID
+			   )
+			)
+			CONNECT BY PRIOR C.ID = C.PARENTID
+    	</isEmpty>
+	</select>
+	
+	<!-- 门卡管理=各种卡管理 [列表通过区域条件获取房产 列表]-->
+	<select id="findHouseLinkCardByScope" resultClass="sysCommunityBean" parameterClass="map">
+		SELECT 
+			  ID, PARENTID, COMMDETAIL, COMMNAME, OWNERID, 
+			  COMMTYPE, COMMLEV, USESIGN, COMMORDER, REMARK, 
+			  COMMZIP, COMMPATH,
+			  (SELECT NAME FROM MAN_PEO P WHERE P.ID = OWNERID) OWNERNAME ,
+			  (SELECT CX.COMMNAME FROM SYS_COMMUNITY CX WHERE CX.ID = C.PARENTID) PARENTNAME,
+			  (SELECT COUNT(1) FROM MAN_CARD MC WHERE MC.HOUSEID=C.ID AND MC.CARDTYPE=1 AND MC.DELETESIGN=0) MCARDNUM,
+			  (SELECT COUNT(1) FROM MAN_CARD MC WHERE MC.HOUSEID=C.ID AND MC.CARDTYPE=2 AND MC.DELETESIGN=0) TCARDNUM,
+			  (SELECT COUNT(1) FROM MAN_CARD MC WHERE MC.HOUSEID=C.ID AND MC.CARDTYPE=3 AND MC.DELETESIGN=0) RCARDNUM
+		FROM SYS_COMMUNITY C
+		WHERE C.COMMLEV = 4
+		AND DELETESIGN=0
+    	<isNotEmpty prepend="" property="commpath">
+    		AND	C.COMMPATH LIKE #commpath#||'/%'
+    	</isNotEmpty>
+    	<isEmpty prepend="" property="usesign">
+    		AND C.USESIGN=1
+    	</isEmpty>
+    	<isNotEmpty prepend="" property="usesign">
+    		AND C.USESIGN=#usesign#
+    	</isNotEmpty>
+    	<isNotEmpty prepend="" property="keyword">
+    		<isEqual property="fields" compareValue="ownername">
+    			AND EXISTS(SELECT 1 FROM MAN_PEO P WHERE P.ID=C.OWNERID AND P.NAME LIKE '%'||#keyword#||'%')
+    		</isEqual>
+    		<isEqual property="fields" compareValue="owneridcard">
+    			AND EXISTS(SELECT 1 FROM MAN_PEO P WHERE P.ID=C.OWNERID AND P.IDCARD LIKE '%'||#keyword#||'%')
+    		</isEqual>
+    		<isEqual property="fields" compareValue="commname">
+    			AND (C.COMMNAME LIKE '%'||#keyword#||'%')
+    		</isEqual>
+    		<isEqual property="fields" compareValue="commdetail">
+    			AND (C.COMMDETAIL LIKE '%'||#keyword#||'%')
+    		</isEqual>
+    	</isNotEmpty>
+    	<isEmpty prepend="" property="commpath">
+			START WITH C.ID IN(
+			   SELECT A.AREAID FROM SYS_USER_AREA A WHERE A.USERID = #userid#
+			   AND EXISTS (
+			       SELECT 1 FROM SYS_COMMUNITY C2
+			       WHERE C2.COMMLEV = #levsign# 
+			       AND C2.ID = A.AREAID
+			   )
+			)
+			CONNECT BY PRIOR C.ID = C.PARENTID
+    	</isEmpty>
+	</select>
+	
+	<!-- 根据commId倒序查询 房间,房产,社区,区树状图 列表  -->
+	<select id="findSysCommListByCommLevDesc" resultClass="sysCommunityBean" parameterClass="string">
+		SELECT * FROM
+		(
+			SELECT 
+				 *
+			FROM SYS_COMMUNITY C
+				START WITH C.ID = #value#
+				CONNECT BY PRIOR C.ID = C.PARENTID
+		)
+		ORDER BY COMMLEV DESC
+	</select>
+	
+	
+	<!-- 删除[真实删除] -->
+	<update id="deleteSysCommByCommId" parameterClass="string">
+		DELETE FROM SYS_COMMUNITY 
+		WHERE ID = #value#
+	</update>
+</sqlMap>

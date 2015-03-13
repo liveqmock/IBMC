@@ -1,0 +1,166 @@
+﻿@charset "utf-8";
+/*******************************************************************************************************************************
+1、水平选项卡。
+*******************************************************************************************************************************/
+.tabsDiv{
+    float:left;
+    margin:0;
+    padding:0;
+    margin-top:10px;
+    margin-left:10px;
+    overflow:hidden;
+}
+
+#tabs {
+    float:left;
+    list-style:none;
+    color: rgb(106, 106, 106);
+    list-style-type:none;
+}
+#tabs li {
+    float:left;
+    margin-right: -1px;
+    border:solid 1px #197ea0;
+    width:88px;
+    background: -moz-linear-gradient(center top , rgb(254, 255, 255), rgb(218, 232, 246)) repeat scroll 0% 0% transparent;
+    background-color:#EBF3FA;
+    height:26px;
+    line-height:26px;
+    text-align: center;
+    padding: 2px 10px 0px 4px;
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+    text-overflow: ellipsis;
+    position:relative;
+}
+#tabs li span {
+    color:#000000;
+    cursor:pointer;
+    padding:2px 10px 2px 4px;
+    width:100%;
+    display:block;
+}
+
+#tabs li.current {
+    color:#fff;
+    border-color:#239cc3;
+    background-color:#239cc3;
+    text-align:left;
+    background: -moz-linear-gradient(center top , rgb(21, 101, 157), rgb(19, 91, 165)) repeat scroll 0% 0% transparent;
+}
+#tabs li.current span {
+    color:#FFFFFF;
+    cursor:pointer;
+    padding: 2px 10px 2px 4px;
+}
+
+#tabs li.indexCurrent {
+    text-align:center;
+    align:center;
+}
+
+
+#tabs li.current span.remove {
+    position:absolute;
+    z-index:100;
+    top:7px;
+   _top:0px;
+    right:-2px;
+    cursor:pointer;
+    /*filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='Images/tab-close.gif',sizingMethod='crop');*/
+    background:url(../Images/tab-close.gif) no-repeat center center;
+    width:14px;
+    height:14px;
+}
+
+#tabs li.current span.removeHover {
+    position:absolute;
+    z-index:100;
+    top:7px;
+    _top:0px;
+    right:-2px;
+    cursor:pointer;
+   /* filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='Images/tab-close-hover.png',sizingMethod='crop');*/
+    background:url(../Images/tab-close-hover.gif) no-repeat center center;
+    width:14px;
+    height:14px;
+}
+
+
+
+#tabs li span.empty{
+    position:absolute;
+    z-index:100;
+    top:7px;
+    _top:0px;
+    right:-2px;
+    cursor:pointer;
+    width:1px;
+    height:1px;
+}
+
+
+
+
+
+
+/*******************************************************************************************************************************
+2、垂直切换选项卡。
+*******************************************************************************************************************************/
+.switchTabs{
+    float:left;
+    width:27px;
+    height:24px;
+    margin-top:5px;
+    border-top:solid 1px #B9C4CF;
+    border-right:solid 1px #B9C4CF;
+    background: -moz-linear-gradient(center top , rgb(254, 255, 255), rgb(218, 232, 246)) repeat scroll 0% 0% transparent;
+    background-color:#EBF3FA;
+    border-top-right-radius: 5px;
+    text-overflow: ellipsis;
+}
+.switchTabs span.tabMore{
+    padding-top:8px;
+    margin: 0 auto;
+    display:block;
+    cursor:pointer;
+    background:url(../Images/tab_more.gif) no-repeat center center;
+    width:15px;
+    height:15px;
+}
+
+
+.switchTabs span.tabMoreHover{
+    padding-top:8px;
+    margin: 0 auto;
+    display:block;
+    cursor:pointer;
+    background:url(../Images/tab-more-hover.gif) no-repeat center center; width:16px; height:15px;
+}
+
+
+.switchTabs #collect{
+    position:absolute;
+    width:120px;
+    height:auto;
+    background:#F6F6F9;
+    margin-top:3px;
+    margin-left:-95px;
+    color:#333;
+    text-align:center;
+    border-radius:3px;border:rgb(175,175,175) 1px solid;
+    border-width:0 1px 1px 1px;
+    box-shadow:0 2px 4px rgba(0,0,0,.2);
+    z-index:1; 
+    display:none;
+	 list-style-type:none;
+}
+
+#collect li{width:100%;color:#666;line-height:30px; height:30px;position:relative; text-align:left;}
+#collect li.hover{background:#e0e1e5; color:#000;}
+#collect li span{display:block; padding-left:18px; cursor:pointer; }
+.currentSwitch{background:url(../Images/current.gif) no-repeat -5% 50%;}
+#collect span.cancel{width:12px; height:12px; position:absolute; right:-5px; top:10px;* top:10px;_ top:-2px;  display:block; background:url(../Images/dClose.gif) no-repeat center center;}
+#collect li span.cancelHover{width:12px; height:12px; position:absolute; right:-5px; top:10px;* top:10px;_ top:-2px;  display:block; background:url(../Images/dClose-hover.gif) no-repeat center center;}
+#collect li span#closeAllSwitch{border-bottom:1px solid #000;background:url(../Images/close-all.png) no-repeat 1% 50%;
+}

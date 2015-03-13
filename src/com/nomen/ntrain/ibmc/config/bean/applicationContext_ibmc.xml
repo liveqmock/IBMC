@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+	@description 门禁系统
+	@author 
+	@date 2015-01-18
+-->
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+	
+	<!-- ==========================================人员设置========================================== -->
+	<bean id="manPeoDAO" class="com.nomen.ntrain.ibmc.dao.implement.ManPeoDAOImpl" parent="nsoftDao"></bean>
+	<bean id="manPeoService" class="com.nomen.ntrain.ibmc.service.implement.ManPeoServiceImpl" parent="baseService">
+		<property name="manPeoDAO" ref="manPeoDAO" />
+	</bean>
+	<bean id="manPeoAction" class="com.nomen.ntrain.ibmc.action.ManPeoAction" scope="prototype">
+		<property name="manPeoService" ref="manPeoService" />
+		<property name="loginService" ref="loginService" />
+	</bean>
+	
+	<!-- ==========================================厂商管理设置========================================== -->
+	<bean id="manFactoryDAO" class="com.nomen.ntrain.ibmc.dao.implement.ManFactoryDAOImpl" parent="nsoftDao"></bean>
+    <bean id="manFacConfigDAO" class="com.nomen.ntrain.ibmc.dao.implement.ManFacConfigDAOImpl" parent="nsoftDao"></bean>
+	<bean id="manFactoryService" class="com.nomen.ntrain.ibmc.service.implement.ManFactoryServiceImpl" parent="baseService">
+		<property name="manFactoryDAO" ref="manFactoryDAO" />
+		<property name="manFacConfigDAO" ref="manFacConfigDAO" />
+	</bean>
+	<bean id="manFactoryAction" class="com.nomen.ntrain.ibmc.action.ManFactoryAction" scope="prototype">
+		<property name="manFactoryService" ref="manFactoryService" />
+		<property name="loginService" ref="loginService" />
+	</bean>
+
+	<!-- ==========================================设备管理========================================== -->
+	<bean id="manDoorDAO" class="com.nomen.ntrain.ibmc.dao.implement.ManDoorDAOImpl" parent="nsoftDao"></bean>
+	<bean id="manDoorService" class="com.nomen.ntrain.ibmc.service.implement.ManDoorServiceImpl" parent="baseService">
+		<property name="manDoorDAO" ref="manDoorDAO" />
+		<property name="manDoorHouseDAO" ref="manDoorHouseDAO" />
+	</bean>
+	<bean id="manDoorAction" class="com.nomen.ntrain.ibmc.action.ManDoorAction" scope="prototype">
+		<property name="sysCommunityService" ref="sysCommunityService" />
+		<property name="manDoorService" ref="manDoorService" />
+		<property name="manDoorHouseService" ref="manDoorHouseService" />
+		<property name="loginService" ref="loginService" />
+	</bean>
+	<!-- ==========================================房产关联[门口机]配置表========================================== -->
+	<bean id="manDoorHouseDAO" class="com.nomen.ntrain.ibmc.dao.implement.ManDoorHouseDAOImpl" parent="nsoftDao"></bean>
+	<bean id="manDoorHouseService" class="com.nomen.ntrain.ibmc.service.implement.ManDoorHouseServiceImpl" parent="baseService">
+		<property name="manDoorHouseDAO" ref="manDoorHouseDAO" />
+		<property name="sysCommunityDAO" ref="sysCommunityDAO" />
+		<!-- 
+		<property name="synWebServiceUtil" ref="synWebServiceUtil" />
+		 -->
+	</bean>
+	
+	<!-- ==========================================社区管理========================================== -->
+	<bean id="sysCommunityDAO" class="com.nomen.ntrain.ibmc.dao.implement.SysCommunityDAOImpl" parent="nsoftDao"></bean>
+	<bean id="sysCommunityService" class="com.nomen.ntrain.ibmc.service.implement.SysCommunityServiceImpl"  parent="baseService">
+		<property name="sysCommunityDAO" ref="sysCommunityDAO" />
+		<property name="manCardDAO" ref="manCardDAO" />
+		<property name="manDoorHouseDAO" ref="manDoorHouseDAO" />
+		<property name="manPeoDAO" ref="manPeoDAO" />
+		<!-- <property name="synWebServiceUtil" ref="synWebServiceUtil" /> -->
+	</bean>
+	<bean id="sysCommunityAction" class="com.nomen.ntrain.ibmc.action.SysCommunityAction" scope="prototype">
+		<property name="sysCommunityService" ref="sysCommunityService" />
+	</bean>
+	<!-- ==========================================房产管理========================================== -->
+	<bean id="manHouseService" class="com.nomen.ntrain.ibmc.service.implement.ManHouseServiceImpl">
+		<property name="sysCommunityDAO" ref="sysCommunityDAO" />
+		<property name="manDoorHouseDAO" ref="manDoorHouseDAO" />
+		<property name="sysCommunityTempDAO" ref="sysCommunityTempDAO" />
+	</bean>
+	<bean id="manHouseAction" class="com.nomen.ntrain.ibmc.action.ManHouseAction" scope="prototype">
+		<property name="sysCommunityService" ref="sysCommunityService" />
+		<property name="manHouseService" ref="manHouseService" />
+		<property name="loginService" ref="loginService" />
+	</bean>
+	<!-- =======================================房产信息导入========================================== -->
+	<bean id="sysCommunityTempDAO" class="com.nomen.ntrain.ibmc.dao.implement.SysCommunityTempDAOImpl" parent="nsoftDao"></bean>
+	
+	<!-- =========================================用户管理========================================== -->
+	<bean id="sysUserDAO" class="com.nomen.ntrain.ibmc.dao.implement.SysUserDAOImpl" parent="nsoftDao"></bean>
+	<bean id="sysUserAreaDAO" class="com.nomen.ntrain.ibmc.dao.implement.SysUserAreaDAOImpl" parent="nsoftDao"></bean>
+	<bean id="sysUserService" class="com.nomen.ntrain.ibmc.service.implement.SysUserServiceImpl">
+		<property name="sysUserDAO" ref="sysUserDAO" />
+		<property name="baseRoleUserDAO" ref="baseRoleUserDAO" />
+		<property name="sysUserAreaDAO" ref="sysUserAreaDAO" />
+	</bean>
+	<bean id="sysUserAction" class="com.nomen.ntrain.ibmc.action.SysUserAction" scope="prototype">
+		<property name="baseRoleService" ref="baseRoleService" />
+	</bean>
+	
+	
+	<!-- =========================================门卡管理========================================== -->
+	<bean id="manCardDAO" class="com.nomen.ntrain.ibmc.dao.implement.ManCardDAOImpl" parent="nsoftDao"></bean>
+	<bean id="manCardService" class="com.nomen.ntrain.ibmc.service.implement.ManCardServiceImpl" parent="baseService">
+		<property name="manCardDAO" ref="manCardDAO" />
+		<property name="sysCommunityDAO" ref="sysCommunityDAO" />
+		<property name="manDoorHouseDAO" ref="manDoorHouseDAO" />
+		<property name="manPeoDAO" ref="manPeoDAO" />
+		<!-- 
+		<property name="synWebServiceUtil" ref="synWebServiceUtil" />
+		 -->
+	</bean>
+	<bean id="manCardAction" class="com.nomen.ntrain.ibmc.action.ManCardAction" scope="prototype">
+		<property name="sysCommunityService" ref="sysCommunityService" />
+		<property name="manCardService" ref="manCardService" />
+		<property name="manCardRecordService" ref="manCardRecordService" />
+		<property name="manCardTracemsgService" ref="manCardTracemsgService" />
+		<property name="manCardTracePhoneService" ref="manCardTracePhoneService" />
+		<!-- 
+		<property name="smsItemlistService" ref="smsItemlistService" />
+		 -->
+	</bean>
+	<!-- =========================================刷卡短信========================================== -->
+	<bean id="manCardTracemsgDAO" class="com.nomen.ntrain.ibmc.dao.implement.ManCardTracemsgDAOImpl" parent="nsoftDao"></bean>
+	<bean id="manCardTracemsgService" class="com.nomen.ntrain.ibmc.service.implement.ManCardTracemsgServiceImpl" parent="baseService">
+		<property name="manCardTracemsgDAO" ref="manCardTracemsgDAO" />
+	</bean>
+	<!-- =========================================刷卡记录查询========================================== -->
+	<bean id="manCardRecordDAO" class="com.nomen.ntrain.ibmc.dao.implement.ManCardRecordDAOImpl" parent="nsoftDao"></bean>
+	<bean id="manCardRecordService" class="com.nomen.ntrain.ibmc.service.implement.ManCardRecordServiceImpl" parent="baseService">
+		<property name="manCardRecordDAO" ref="manCardRecordDAO" />
+	</bean>
+	<!-- =========================================门卡短信配置========================================== -->
+	<bean id="manCardTracePhoneDAO" class="com.nomen.ntrain.ibmc.dao.implement.ManCardTracePhoneDAOImpl" parent="nsoftDao"></bean>
+	<bean id="manCardTracePhoneService" class="com.nomen.ntrain.ibmc.service.implement.ManCardTracePhoneServiceImpl" parent="baseService">
+		<property name="manCardTracePhoneDAO" ref="manCardTracePhoneDAO" />
+	</bean>
+	
+	<!-- =========================================同步========================================== -->
+	<bean id="synWebServiceDAO" class="com.nomen.ntrain.ibmc.dao.implement.SynWebServiceDAOImpl" parent="nsoftDao"></bean>
+	<bean id="synWebServiceUtil" class="com.nomen.ntrain.ibmc.util.SynWebServiceUtil">
+		<property name="synWebServiceDAO" ref="synWebServiceDAO" />
+		<property name="manDoorDAO" ref="manDoorDAO" />
+		<property name="synDataDAO" ref="synDataDAO" />
+		<property name="manDoorHouseDAO" ref="manDoorHouseDAO" />
+		<property name="manCardDAO" ref="manCardDAO" />
+		<property name="sysCommunityDAO" ref="sysCommunityDAO" />
+	</bean>
+	
+	
+	<!-- ==========================================系统配置========================================== -->
+	<bean id="sysConfigDAO" class="com.nomen.ntrain.ibmc.dao.implement.SysConfigDAOImpl" parent="nsoftDao"></bean>
+	<bean id="sysConfigService" class="com.nomen.ntrain.ibmc.service.implement.SysConfigServiceImpl">
+		<property name="sysConfigDAO" ref="sysConfigDAO" />
+	</bean>
+	<bean id="sysConfigAction" class="com.nomen.ntrain.ibmc.action.SysConfigAction" scope="prototype">
+		<property name="sysConfigService" ref="sysConfigService" />
+	</bean>
+</beans>

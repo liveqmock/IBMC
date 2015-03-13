@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+    "http://struts.apache.org/dtds/struts-2.0.dtd">
+<!--
+@description 房产管理_房产信息
+@author 
+@date 2015-01-21
+-->
+<struts>
+    <package name="ManHouse" extends="nsoft-ic" namespace="/Man/House">
+    	<!-- ==========================    JQuery相关     ============================ -->
+		<!-- 房产信息[列表] -->
+    	<action name="findManHouseListByJq" class="manHouseAction" method="findManHouseListByJq"></action>
+		<!-- 房产信息查询下一个排序号 -->
+    	<action name="findManHouseNextOrderByJq" class="manHouseAction" method="findManHouseNextOrderByJq"></action>
+		<!-- 房产信息[删除] -->
+    	<action name="delManHouseByJq" class="manHouseAction" method="delManHouseByJq"></action>
+		<!-- 查询统计门口机关联房产的个数 -->
+    	<action name="findHouseLinkDoorAndCardCountByJq" class="manHouseAction" method="findHouseLinkDoorAndCardCountByJq"></action>
+    	
+		<!-- 房产下面的房间[列表] -->
+    	<action name="findManHouseRoomListByJq" class="manHouseAction" method="findManHouseRoomListByJq"></action>
+		<!-- 查询房间信息[bean] -->
+    	<action name="findManHouseRoomBeanByJq" class="manHouseAction" method="findManHouseRoomBeanByJq"></action>
+		<!-- 保存房产下面的房间[列表] -->
+    	<action name="saveManRoomByJq" class="manHouseAction" method="saveManRoomByJq"></action>
+		
+    	<!-- ==============================   房产信息维护  ================================  -->
+		<!-- 跳转到[房产信息维护]列表页面 -->
+    	<action name="toforwardlistpage" class="manHouseAction" method="toForwardListPage">
+    		<result name="success">/Ibmc/ManHouse/House_List.jsp</result>
+		</action>
+		<!-- 跳转到[房产信息维护]新增,修改页面 -->
+    	<action name="setmanhouse" class="manHouseAction" method="setManHouse">
+    		<result name="success">/Ibmc/ManHouse/House_Set1.jsp</result>
+		</action>
+		<!-- 新增,修改保存[房产信息维护] -->
+    	<action name="savemanhouse" class="manHouseAction" method="saveManHouse">
+    		<result name="input">/Ibmc/ManHouse/House_Set1.jsp</result>
+		</action>
+		<!-- 跳转到[房产信息维护中房间列表]新增,修改页面 -->
+    	<action name="setmanhouseromm" class="manHouseAction" method="setManHouseRomm">
+    		<result name="success">/Ibmc/ManHouse/House_Set2.jsp</result>
+		</action>
+		<!-- 房产信息维护中导出Excel -->
+    	<action name="savemanhouseexpexcel" class="manHouseAction" method="saveManHouseExpExcel"></action>
+		
+		<!-- ==============================   房产信息查询  ================================  -->
+		<!-- 跳转到[房产信息维护]列表页面 -->
+    	<action name="toforwardlistpage_query" class="manHouseAction" method="toForwardListPage">
+    		<result name="success">/Ibmc/ManHouse/Query_List.jsp</result>
+		</action>
+		<!-- 跳转到[房产信息维护中房间列表]页面 -->
+    	<action name="setmanhouseromm_query" class="manHouseAction" method="setManHouseRomm">
+    		<result name="success">/Ibmc/ManHouse/Query_Set.jsp</result>
+		</action>
+		
+		<!-- ==============================   房产信息导入  ================================  -->
+		<!-- 房产信息导入预览[列表] -->
+    	<action name="findManHouseImpDataListByJq" class="manHouseAction" method="findManHouseImpDataListByJq"></action>
+		<!-- 跳转到[房产信息导入]页面 -->
+		<action name="toforwardlistpage_imp" class="manHouseAction" method="toForwardListPage">
+    		<result name="success">/Ibmc/ManHouse/HouseImp_Set.jsp</result>
+		</action>
+		<!-- 保存验证导入的[房产信息] -->
+    	<action name="savemanhouseimp" class="manHouseAction" method="saveManHouseImp">
+    		<param name="savePath">/Ibmc/ManHouse/Upload/</param>
+    		<result name="input">/Ibmc/ManHouse/HouseImp_Set.jsp</result>
+    		<result name="success">/Ibmc/ManHouse/HouseImp_List.jsp</result>
+		</action>
+		<!-- 跳转到[房产信息导入]预览列表页面 -->
+    	<action name="setmanhouseimpdatapurview" class="manHouseAction" method="setManHouseImpDataPurview">
+    		<result name="success">/Ibmc/ManHouse/HouseImp_List.jsp</result>
+		</action>
+		<!-- 验证不通过的数据后导出Excel -->
+    	<action name="expmanhousetempimpdata" class="manHouseAction" method="expManHouseTempImpData"></action>
+		<!-- 保存到正式表 -->
+    	<action name="savemanhousebyimptempdata" class="manHouseAction" method="saveManHouseByImpTempData">
+    		<result name="success">/Ibmc/ManHouse/HouseImp_Set.jsp</result>
+		</action>
+	</package>
+</struts>
+

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+    "http://struts.apache.org/dtds/struts-2.0.dtd">
+<!-- 
+	@description 错误日志
+    @author 郑学仕
+    @date 2014-11-21
+ -->
+ <struts>
+    <package name="BaseException" extends="nsoft-ic" namespace="/Base/Log">
+        <!-- 左侧菜单链接跳转 -->
+    	<action name="toforwardexception" class="baseExceptionAction" method="toForwardException">
+    		<result name="success" >/Base/Log/Exception_List.jsp</result>
+    	</action>  
+    	<!-- 列表 -->
+    	<action name="listBaseExceptionByJq" class="baseExceptionAction" method="listBaseExceptionByJq"></action>  
+    	 
+    	<!-- 错误日志详细页 -->
+    	<action name="setbaseexception" class="baseExceptionAction" method="setBaseException">
+    		<result name="success">/Base/Log/Exception_Win.jsp</result>
+    	</action> 
+    	
+		<!-- 删除某个年度列表 -->
+    	<action name="deleteBaseExceptionByJq" class="baseExceptionAction" method="deleteBaseExceptionByJq"></action>
+    </package>
+</struts>

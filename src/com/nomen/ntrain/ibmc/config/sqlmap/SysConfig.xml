@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!--
+@description 系统管理_系统配置
+@author ljl
+@date 2015-02-18
+-->
+<sqlMap namespace="SysConfig">
+	<typeAlias alias="sysConfigBean" type="com.nomen.ntrain.ibmc.bean.SysConfigBean"/>
+
+	<!-- 查找系统管理_系统配置信息-->
+	<select id="findSysConfigList" resultClass="sysConfigBean" parameterClass="map">
+		select 
+			*
+		from sys_config
+		where 1=1 
+		and configkey =#configkey# 
+		and commid =#commid#
+	</select>
+	
+	<!-- 添加系统管理_系统配置信息-->
+	<insert id="insertSysConfig" parameterClass="sysConfigBean">
+		insert into sys_config
+		  (commid, configkey, configval1, configval2, configval3, configval4, configval5, configval6)
+		values
+		  (#commid#, #configkey#, #configval1#, #configval2#, #configval3#, #configval4#, #configval5#, #configval6#)
+	</insert> 
+
+	<!-- 更新系统管理_系统配置信息 -->
+	<update id="updateSysConfig" parameterClass="sysConfigBean">
+		update sys_config 
+		set  configkey = #configkey#
+		<isNotEmpty prepend="," property="configval1">
+			configval1 = #configval1#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="configval2">
+			configval2 = #configval2#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="configval3">
+			configval3 = #configval3#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="configval4">
+			configval4 = #configval4#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="configval5">
+			configval5 = #configval5#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="configval6">
+			configval6 = #configval6#
+		</isNotEmpty>
+		where  configkey = #configkey#
+		and commid = #commid#
+	</update>
+
+	<!-- 删除系统管理_系统配置信息-->
+	<delete id="deleteSysConfig" parameterClass="map">
+		delete from sys_config
+		where 1=1
+		and configkey = #configkey#
+		and commid = #commid#
+	</delete>
+</sqlMap>

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!--
+ @description 设备管理_厂商设备型号配置表
+ @author 郑学仕
+ @date 2015-1-20
+-->
+<sqlMap namespace="ManFacConfig">
+	<typeAlias alias="manFactoryBean" type="com.nomen.ntrain.ibmc.bean.ManFactoryBean"/>
+	<typeAlias alias="manFacConfigBean" type="com.nomen.ntrain.ibmc.bean.ManFacConfigBean"/>
+	
+	<!--查找 厂商设备型号列表  -->
+	<select id="findManFacConfigList" parameterClass="String" resultClass="manFacConfigBean">
+		select
+			 id,facid,facmodel
+		from man_fac_config
+		where facid = #id#
+	</select>
+	
+	<!--添加 厂商设备型号  -->
+	<insert id="insertManFacConfigBean" parameterClass="manFacConfigBean">
+		<selectKey resultClass="java.lang.String" keyProperty="id">
+			select seq_man_fac_config.nextval as id from dual
+		</selectKey>
+		insert into man_fac_config
+			( id,facid,facmodel)
+		values
+			(#id#,#facid#,#facmodel#)
+	</insert>
+	
+	<!--添加 厂商设备型号[自提供id]  -->
+	<insert id="insertManFacConfigBean2" parameterClass="manFacConfigBean">
+		insert into man_fac_config
+			(id,facid,facmodel)
+		values
+			(#id#,#facid#,#facmodel#)
+	</insert>
+	
+	<!--删除  厂商设备型号  -->
+	<delete id="deleteManFacConfigBean" parameterClass="String">
+		delete from man_fac_config where id = #id#
+	</delete>
+	<!--删除  厂商设备型号(删除厂商管理时使用)  -->
+	<delete id="deleteManFacConfigByFacid" parameterClass="String">
+		delete from man_fac_config where facid in ($id$)
+	</delete>
+</sqlMap>

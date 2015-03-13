@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+    "http://struts.apache.org/dtds/struts-2.0.dtd">
+<!-- 
+	@description 登录模块 
+    @author 连金亮
+    @date 2010-12-26
+ -->
+<struts>
+    <package name="loginlog" extends="struts-default">
+        <!-- 已经被前台连接替代 --> 
+    	<action name="listlogin" class="loginAction" method="listLogin">  
+            <result name="success">/Login.html</result>
+        </action>
+	   	<!-- 登录实现 -->
+	   	<action name="saveloginin" class="loginAction" method="saveLoginIn"> 
+	      	<result name="login_error">/Login_Err.jsp</result>
+	      	<result name="success">/Index.jsp</result>
+	   	</action>
+	   	
+	   	<!-- 加载子菜单 -->
+	   	<action name="leftsubmenu" class="loginAction" method="leftSubMenu"></action>
+	   	
+	   	
+    	<!-- 注销实现 -->
+        <action name="saveloginout" class="loginAction" method="saveLoginOut">  
+            <result name="success" type="redirect-action">listlogin</result>
+        </action>
+        
+         <!-- 加密密码为MD5码（供密码修改验证用的） -->
+        <action name="setpasswordbymd5" class="loginAction" method="setPassWordByMD5">  
+        </action>
+    </package>  
+</struts>

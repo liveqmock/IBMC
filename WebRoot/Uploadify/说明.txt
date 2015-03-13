@@ -1,0 +1,68 @@
+1、修改各个模块对应的附件Action|Service|Dao|Sqlmap|等等（具体参照BaseFileAction--可以直接复制修改）。
+2、修改业务Action	
+	删除Action中的 以及set get方法
+	//文件上传
+	protected File[] upload; 					  //用File数组来封装多个上传文件域对象
+	protected String[] uploadFileName; 			  //用String数组来封装多个上传文件名
+	protected String[] uploadContentType; 		  //用String数组来封装多个上传文件类型
+	，保留savePath
+	
+2、将Action配置文件中的save**** <param name="savePath">/Base/System/Software/</param> 迁移到set***中[即新增/修改跳转方法] 如BaseModuleAction.xml
+3、页面如:Asst_Ohelp_Set.jsp页面。
+   调用方式如下:
+   (1) 加入CSS ：<link href="<c:url value='/Uploadify/uploadify.css'/>" rel="stylesheet" type="text/css">
+   (2) 加入JAVASCRIPT
+		<script language="javascript" src="<c:url value='/Script/jquery-1.4.2.min.js'/>"></script>
+		<script language="javascript" src="<c:url value='/Uploadify/swfobject.js'/>"></script>
+		<script language="javascript" src="<c:url value='/Uploadify/jquery.uploadify.v2.1.4.js'/>"></script>
+		<script language="javascript" src="<c:url value='/Uploadify/FileDBUtil.js'/>"></script>
+   (3) 修改Form表单中附件控件元素如下格式：ID可以自己命名（但是DIV的id要与其对应）
+         <div id="uploads1_span">
+         	<input type="file" name="uploads" id="uploads1">
+         	（≤50MB，*.wps/doc/xls/ceb/pdf）
+         </div>
+   (4) 删除Form表单上面的 enctype="multipart/form-data" 以及onsubmit方法
+   
+   (5) 在js中加入如下代码:
+       
+		$(function(){
+			var fUtil = new FileDBUtil();
+			fUtil.uploadFileId = "uploads1";
+			fUtil.modsign   = "1";
+			fUtil.saveFolder   = "${savePath}";
+			fUtil.relaDataId   = "${baseModuleBean.id}";
+			fUtil.uploadFileDesc   = "支持格式:wps/doc/xls/ceb/pdf.";
+			fUtil.uploadFileExt    = "*.wps;*.doc;*.xls;*.ceb;*.pdf";
+			fUtil.setConfigValues({
+				'custom_file_delete_jqurl':'<c:url value="/Base/File/deleteBaseFileByJq.shtml"/>',
+				'custom_file_insert_jqurl':'<c:url value="/Base/File/insertBaseFileByJq.shtml"/>',
+				'custom_file_upload_jqurl':'<c:url value="/uploadFile.shtml"/>'
+			});
+			//将后台数据转化为数据组
+			var fileListArr = new Array();
+           	<c:forEach items="${filelist}" var="file" varStatus="st">
+           		fileListArr.push({"index":"${st.index}","id":"${file.id}","savepath":"${file.savepath}","savename":"${file.savename}","filename":"${file.filename}"});
+           	</c:forEach>
+	        fUtil.makeFileList(fileListArr);
+			fUtil.onLoadFileUploader();
+				
+			
+			//返回列表页面
+			fUtil.getFormFieldByJq("btn_back").bind("click",function(){
+				document.form1.action = "listappohelp.shtml";
+				document.form1.submit();
+			});
+			
+			//表单提交验证
+			fUtil.getFormFieldByJq("btn_sure").bind("submit",function(){
+				var jsonArr = [{"key":"uploads1","error":"文件路径不能为空！"}];
+				for(i =0;i<jsonArr.length;i++){
+					if($("#t_"+jsonArr[i]['key']).size()==0 && ($("#"+jsonArr[i]['key']+"FileList").html()==null || $("#"+jsonArr[i]['key']+"FileList").html()=="")){
+						alert(jsonArr[i]['error']);
+						return false;
+					}
+				}
+				openProcessDiv();
+				return true;
+			});
+		});

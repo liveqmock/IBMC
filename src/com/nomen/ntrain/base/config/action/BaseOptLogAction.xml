@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+    "http://struts.apache.org/dtds/struts-2.0.dtd">
+<!-- 
+	@description 日志管理
+    @author 郑学仕
+    @date 2014-11-20
+ -->
+ <struts>
+    <package name="BaseOptLog" extends="nsoft-ic" namespace="/Base/Log">
+       <!-- 菜单链接跳转 [登录日志]-->
+    	<action name="toforwardlog" class="baseOptLogAction" method="toForwardOptLog">
+    		<result name="success">/Base/Log/Log_List.jsp</result>
+    	</action>
+    	<!-- 菜单链接跳转 [操作日志]-->
+    	<action name="toforwardopt" class="baseOptLogAction" method="toForwardOptLog">
+    		<result name="success">/Base/Log/Opt_List.jsp</result>
+    	</action>
+ 
+    	
+    	<!-- ==============================登录|操作日志=============================== -->
+    	<!-- 列表 -->
+    	<action name="listBaseOptLogByJq" class="baseOptLogAction" method="listBaseOptLogByJq"></action>   
+        
+         <!-- 操作日志详细列表 -->
+        <action name="listbaseoptdesc" class="baseOptLogAction" method="listBaseOptDesc">
+            <result name="success">/Base/Log/Opt_Win.jsp</result>
+        </action>  
+        
+         <!-- 删除 -->   
+        <action name="deleteBaseOptLogByJq" class="baseOptLogAction" method="deleteBaseOptLogByJq"></action>
+    </package>
+ </struts>

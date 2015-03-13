@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+    "http://struts.apache.org/dtds/struts-2.0.dtd">
+<!--
+@description 人员_业主/租户表
+@author 
+@date 2015-01-18
+-->
+<struts>
+    <package name="ManPeo" extends="nsoft-ic" namespace="/Man/Peo">
+    	<!-- ==========================    JQuery相关     ============================ -->
+		<!-- 人员管理[列表] -->
+    	<action name="findManPeoListByJq" class="manPeoAction" method="findManPeoListByJq"></action>
+		<!-- 人员管理验证该人员是否存在系统中 -->
+    	<action name="chkManPeoIsExistsByJq" class="manPeoAction" method="chkManPeoIsExistsByJq"></action>
+		<!-- 人员管理[删除] -->
+    	<action name="delManPeoByJq" class="manPeoAction" method="delManPeoByJq"></action>
+		<!-- 人员Bean查询[通过idcard查询] -->
+    	<action name="findManPeoBeanByJq" class="manPeoAction" method="findManPeoBeanByJq"></action>
+    	<action name="findManPeoListByCardnoByJq" class="manPeoAction" method="findManPeoListByCardnoByJq"></action>
+		
+    	<!-- ==============================   房东管理  ================================  -->
+		<!-- 跳转到[房东管理]列表页面 -->
+    	<action name="toforwardlistpage_master" class="manPeoAction" method="toForwardListPage">
+    		<result name="success">/Ibmc/ManPeo/Master_List.jsp</result>
+    		<param name="ownersign">1</param>		
+		</action>
+		<!-- 跳转到[房东管理]新增,修改页面 -->
+    	<action name="setmanpeo_master" class="manPeoAction" method="setManPeo">
+    		<result name="success">/Ibmc/ManPeo/Master_Set.jsp</result>
+    		<param name="ownersign">1</param>
+    		<param name="rentsign">0</param>		
+		</action>
+		<!-- 保存[房东管理]新增,修改 -->
+    	<action name="savemanpeo_master" class="manPeoAction" method="saveManPeo">
+    		<result name="input">/Ibmc/ManPeo/Master_Set.jsp</result>
+		</action>
+		
+    	<!-- ==============================   租客管理  ================================  -->
+		<!-- 跳转到[租客管理]列表页面 -->
+    	<action name="toforwardlistpage_rent" class="manPeoAction" method="toForwardListPage">
+    		<result name="success">/Ibmc/ManPeo/Rent_List.jsp</result>
+    		<param name="rentsign">1</param>
+		</action>
+		<!-- 跳转到[租客管理]新增,修改页面 -->
+    	<action name="setmanpeo_rent" class="manPeoAction" method="setManPeo">
+    		<result name="success">/Ibmc/ManPeo/Rent_Set.jsp</result>
+    		<param name="ownersign">0</param>
+    		<param name="rentsign">1</param>
+		</action>
+		<!-- 保存[租客管理]新增,修改 -->
+    	<action name="savemanpeo_rent" class="manPeoAction" method="saveManPeo">
+    		<result name="input">/Ibmc/ManPeo/Rent_Set.jsp</result>
+		</action>
+		
+    	<!-- ==============================   人员查询  ================================  -->
+		<!-- 跳转到[人员查询]列表页面 -->
+    	<action name="toforwardlistpage_query" class="manPeoAction" method="toForwardListPage">
+    		<result name="success">/Ibmc/ManPeo/Query_List.jsp</result>
+		</action>
+		<!-- 跳转到[人员查询]详细页面 -->
+    	<action name="setmanpeo_query" class="manPeoAction" method="setManPeo">
+    		<result name="success">/Ibmc/ManPeo/Query_Win.jsp</result>
+		</action>
+		<!-- 导出[人员查询]Excel -->
+    	<action name="savemanpeoexpexcel" class="manPeoAction" method="saveManPeoExpExcel"></action>
+		
+		<!-- ==================== 分离新增房产中的业主新增，正式卡中租客新增 ===================  -->
+		<!-- 跳转到[房东管理]新增,修改页面 -->
+    	<action name="setmanpeomess_master" class="manPeoAction" method="setManPeo">
+    		<result name="success">/Ibmc/ManPeo/Master_Set2.jsp</result>
+    		<param name="ownersign">1</param>
+    		<param name="rentsign">0</param>		
+		</action>
+		<!-- 跳转到[租客管理]新增,修改页面 -->
+    	<action name="setmanpeomess_rent" class="manPeoAction" method="setManPeo">
+    		<result name="success">/Ibmc/ManPeo/Rent_Set2.jsp</result>
+    		<param name="ownersign">0</param>
+    		<param name="rentsign">1</param>
+		</action>
+		<!-- 保存[房东管理]新增,修改 -->
+    	<action name="savemanpeomess_master" class="manPeoAction" method="saveManPeoMess"></action>
+		<!-- 保存[租客管理]新增,修改 -->
+    	<action name="savemanpeomess_rent" class="manPeoAction" method="saveManPeoMess"></action>
+		
+	</package>
+	
+    <package name="ManPeo_Apk" extends="struts-default" namespace="/Peo/Apk">
+		<!-- 根据门卡主键ID查询租客，业主信息[通过门卡主键ID查询] -->
+    	<action name="findManPeoListByCardnoByJq" class="manPeoAction" method="findManPeoListByCardnoByJq"></action>
+    </package>
+</struts>
+

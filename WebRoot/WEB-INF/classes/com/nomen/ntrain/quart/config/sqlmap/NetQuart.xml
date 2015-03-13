@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 
+	@description 调度器表sql映射  
+    @author 梁桂钊
+    @date 2013-09-16
+ -->
+<sqlMap namespace="NetQuart">
+	<typeAlias alias="netQuartBean" type="com.nomen.ntrain.quart.bean.NetQuartBean"/>
+	
+	<!-- 获取调度器任务实体列表 -->
+    <select id="findNetQuartList" parameterClass="map" resultClass="netQuartBean">
+    	SELECT 
+    		JOBID,JOBGROUP,JOBSTATUS,CRONEXPR,REMARK,METHNAME,ID,PARAM,
+    		TO_CHAR(MAINDATE,'YYYY-MM-DD HH24:MI:SS') MAINDATE
+		FROM NET_QUART
+		WHERE 1=1
+		<isNotEmpty prepend="and" property="jobstatus">
+			JOBSTATUS=#jobstatus#
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="jobid">
+			JOBID = #jobid#
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="methname">
+			 METHNAME = #methname#
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="param">
+			 PARAM = #param#
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="jobgroup">
+			JOBGROUP=#jobgroup#
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="maindate">
+			TO_CHAR(MAINDATE,'YYYY-MM-DD') = TO_CHAR((TO_DATE(#maindate#,'YYYY-MM-DD')-2),'YYYY-MM-DD')
+		</isNotEmpty>
+    	<isNotEmpty prepend="and" property="keyword">
+    		$fields$ LIKE '%'||#keyword#||'%'
+    	</isNotEmpty>  
+		ORDER BY MAINDATE DESC
+    </select>
+    
+	<!-- 获取调度器任务实体Bean -->
+    <select id="findNetQuartBean" parameterClass="string" resultClass="netQuartBean">
+	    SELECT JOBID,JOBGROUP,JOBSTATUS,CRONEXPR,REMARK,METHNAME,ID,PARAM,MAINDATE
+		FROM NET_QUART
+		WHERE ID=#id#
+		ORDER BY ID
+    </select>
+       
+    <!-- 添加调度器任务实体Bean -->
+	<insert id="insertNetQuart" parameterClass="netQuartBean" >
+		<selectKey resultClass="java.lang.String" keyProperty="id">
+			SELECT SEQ_NET_QUART.NEXTVAL AS ID FROM DUAL
+		</selectKey>
+		<![CDATA[
+		INSERT INTO NET_QUART
+		  (JOBID,JOBGROUP,JOBSTATUS,CRONEXPR,REMARK,METHNAME,ID,PARAM,MAINDATE)
+		VALUES
+		  (#jobid#,#jobgroup#,#jobstatus#,#cronexpr#,#remark#,#methname#,#id#,#param#,SYSDATE)
+		]]>
+	</insert>   
+    
+    <!-- 更新调度器任务实体Bean -->
+	<update id="updateNetQuart" parameterClass="netQuartBean">
+		UPDATE NET_QUART 
+		SET  
+			ID = #id#,
+			MAINDATE = SYSDATE
+			<isNotNull prepend="," property="jobid">JOBID = #jobid#</isNotNull>
+			<isNotNull prepend="," property="jobgroup">JOBGROUP = #jobgroup#</isNotNull>
+			<isNotNull prepend="," property="methname">METHNAME = #methname#</isNotNull>
+			<isNotNull prepend="," property="cronexpr">CRONEXPR = #cronexpr#</isNotNull>
+			<isNotNull prepend="," property="remark">REMARK = #remark#</isNotNull>
+			<isNotNull prepend="," property="jobstatus">JOBSTATUS = #jobstatus#</isNotNull>
+			<isNotNull prepend="," property="param">PARAM = #param#</isNotNull>
+		WHERE  ID = #id#
+	</update>
+	
+	<!-- 删除调度器任务实体Bean(根据ID) -->
+	<delete id="deleteNetQuart" parameterClass="string">
+		DELETE FROM NET_QUART WHERE  ID = #id#
+	</delete>
+	
+	<!-- 删除调度器任务实体Bean(根据任务维护时间) -->
+	<delete id="deleteNetQuartByDate" parameterClass="string">
+		DELETE FROM NET_QUART
+		WHERE JOBGROUP=0 AND
+		TO_CHAR(MAINDATE,'YYYY-MM-DD') = TO_CHAR((TO_DATE(#value#,'YYYY-MM-DD')-2),'YYYY-MM-DD')
+	</delete>
+</sqlMap>

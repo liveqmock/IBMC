@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 
+	@description 莆田岗位培训_权限设置
+    @author 郑学仕
+    @date 2014-11-14
+ -->
+ <sqlMap namespace="BaseRoleUser">
+ 	<typeAlias alias="baseRoleBean" type="com.nomen.ntrain.base.bean.BaseRoleBean"/>
+ 	<typeAlias alias="baseRoleUserBean" type="com.nomen.ntrain.base.bean.BaseRoleUserBean"/>
+ 	<typeAlias alias="loginbean" type="com.nomen.ntrain.base.bean.LoginBean" /> 
+    <!-- 查询 用户信息 -->
+ 	<!-- 新增用户信息 -->
+ 	<insert id="insertBaseRoleUser" parameterClass="baseRoleUserBean">
+ 		INSERT INTO BASE_ROLE_USER
+		  (USERID, ROLEIDS, OPTUSERID,OPTUSERNAME)
+		VALUES
+		  (#userid#, #roleids#,#optuserid#,#optusername#)
+ 	</insert>
+ 	
+ 	<!-- 修改用户信息 -->
+ 	<update id="updateBaseRoleUser" parameterClass="baseRoleUserBean">
+ 		UPDATE BASE_ROLE_USER 
+ 		SET OPTUSERID=#optuserid#,
+ 		    ROLEIDS=#roleids#,
+ 		    OPTUSERNAME=#optusername#
+		 WHERE USERID=#userid#
+ 	</update>
+ 	
+ 	<!-- 删除用户管理信息 -->
+ 	<delete id="deleteBaseRoleUserByUserid" parameterClass="string">
+ 		DELETE FROM BASE_ROLE_USER WHERE USERID=#value#
+ 	</delete>
+ </sqlMap>

@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 
+	@description 莆田岗位培训_角色定义
+    @author 郑学仕
+    @date 2014-11-14
+ -->
+ <sqlMap namespace="BaseRole">
+	<typeAlias alias="baseRoleBean" type="com.nomen.ntrain.base.bean.BaseRoleBean"/>
+	<typeAlias alias="baseRoleMenuBean" type="com.nomen.ntrain.base.bean.BaseRoleMenuBean"/>	
+    
+	<!-- 角色管理 列表 -->
+	<select id="findBaseRoleList" parameterClass="map" resultClass="baseRoleBean">
+		SELECT
+		    ID, ROLENAME,RGROUP, REMARK, MAINUSER,WEIGHT
+		FROM BASE_ROLE
+		WHERE 1=1
+	    ORDER BY WEIGHT
+	</select>
+	
+	<!-- 查询单条记录[通过id获取详细] -->
+	<select id="findBaseRoleBeanById" resultClass="baseRoleBean" parameterClass="string">
+		SELECT  
+			ID, ROLENAME,RGROUP, REMARK, MAINUSER,WEIGHT
+		FROM 
+		    BASE_ROLE WHERE ID=#value#
+	</select>
+	
+	<!-- 删除一条记录[通过id删除] -->
+	<delete id="deleteBaseRoleById"  parameterClass="string">
+		DELETE FROM BASE_ROLE WHERE ID = #value#
+	</delete>
+    
+	<!-- 新增 角色管理 -->
+    <insert id="insertBaseRole" parameterClass="baseRoleBean">
+    	<selectKey resultClass="string" keyProperty="id">
+    		SELECT SEQ_BASE_ROLE.NEXTVAL AS ID FROM DUAL
+    	</selectKey>
+    	<![CDATA[
+    	INSERT INTO BASE_ROLE
+          (ID, ROLENAME,RGROUP, REMARK, MAINUSER,WEIGHT)
+        VALUES
+          (#id#, #rolename#,#rgroup#, #remark#, #mainuser#,#weight#)
+    	]]>
+    </insert>
+    
+	<!-- 修改 角色管理 -->
+    <update id="updateBaseRole" parameterClass="baseRoleBean">
+        UPDATE BASE_ROLE
+		   SET ID = #id#
+		       <isNotEmpty property="rolename" prepend=",">
+		       ROLENAME = #rolename#
+		       </isNotEmpty>
+		       <isNotEmpty property="rgroup" prepend=",">
+		       RGROUP = #rgroup#
+		       </isNotEmpty>
+		       <isNotEmpty property="remark" prepend=",">
+		       REMARK = #remark#
+		       </isNotEmpty>
+		       <isNotEmpty property="mainuser" prepend=",">
+		       MAINUSER = #mainuser#
+		       </isNotEmpty>
+		       <isNotEmpty property="weight" prepend=",">
+		       WEIGHT = #weight#
+		       </isNotEmpty>
+		 WHERE ID = #id#
+    </update>
+    
+    <!-- 查询登录人员中角色管理权值列表 -->
+    <select id="findBaseRoleByUseridList" parameterClass="map" resultClass="baseRoleBean">
+		SELECT R1.ID, R1.ROLENAME, R1.REMARK,R1.MAINUSER, R1.RGROUP, R1.WEIGHT FROM 
+		       BASE_ROLE r1 ,
+		       (SELECT R.WEIGHT FROM 
+		               BASE_ROLE R ,
+		               BASE_ROLE_USER U
+		       WHERE U.USERID = #userid# AND U.ROLEIDS = R.ID) T
+		WHERE R1.WEIGHT $expree$ T.WEIGHT
+		ORDER BY R1.WEIGHT
+    </select>
+    
+    <!-- 查询角色被引入的数量 -->
+    <select id="findBaseRoleImpCount" parameterClass="string" resultClass="string">
+    	SELECT NVL(COUNT(1),0)TOTAL FROM BASE_ROLE_USER U WHERE U.ROLEIDS = #roleid#
+    </select>
+    
+    <!-- 角色菜单定义 列表 -->
+	<select id="findBaseRoleMenuListByRole" parameterClass="String" resultClass="baseRoleMenuBean">
+		SELECT
+		    ROLEID, MENUID
+		FROM BASE_ROLE_MENU
+		WHERE 1=1
+        AND ROLEID = #roleid#
+	</select>
+    
+     <!-- 新增  角色菜单定义-->
+      <insert id="insertBaseRoleMenu" parameterClass="baseRoleMenuBean">
+    	<![CDATA[
+    	INSERT INTO BASE_ROLE_MENU
+          (roleid, menuid)
+        VALUES
+          (#roleid#, #menuid#)
+    	]]>
+    </insert>
+    
+    <!-- 删除[通过id删除] 角色菜单定义 -->
+	<delete id="deleteBaseRoleMenuByRoleId"  parameterClass="String">
+		DELETE FROM BASE_ROLE_MENU WHERE ROLEID = #value#
+	</delete>
+</sqlMap>

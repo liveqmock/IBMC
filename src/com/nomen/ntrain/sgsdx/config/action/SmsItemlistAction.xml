@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+    "http://struts.apache.org/dtds/struts-2.0.dtd">
+<!-- 
+	@description 短信内容
+    @author 林木山
+    @date 2012-08-02
+ -->
+<struts>
+    <package name="SmsItemlist" extends="nsoft-ic" namespace="/Sms/Itemlist">
+    	<!-- ========================JQuery相关========================= -->
+    	<!-- 短信内容列表 -->
+    	<action name="findSendSmsDataByJq" class="smsItemlistAction" method="findSendSmsDataByJq"></action>
+    	<!-- 短信内容[删除] -->
+    	<action name="deleteSmsItemlistByJq" class="smsItemlistAction" method="deleteSmsItemlistByJq"></action>    	
+    	    	
+    	<!-- 短信内容列表 -->
+    	<action name="listsmsitemlist" class="smsItemlistAction" method="listSmsItemlist">
+    		<result name="success">/Sgsdx/Send/Manual_List.jsp</result>
+    	</action>
+    	<!-- 手动发送_[跳转] -->
+    	<action name="setsmsitemlist" class="smsItemlistAction" method="setSmsItemlist">
+    		<result name="success">/Sgsdx/Send/Manual_Set.jsp</result>
+    	</action>  	
+    	<!-- 手动发送_[保存] -->
+    	<action name="savesmsitemlist" class="smsItemlistAction" method="saveSmsItemlist">
+    		<result name="success">/Sgsdx/Send/Manual_List.jsp</result>
+    		<result name="input">/Sgsdx/Send/Manual_Set.jsp</result>
+    	</action>
+    	<!-- 手动发送_发送情况详细__[弹出] -->
+    	<action name="setsmsitemlistwin" class="smsItemlistAction" method="setSmsItemlistWin">
+    		<result name="success">/Sgsdx/Send/Manual_Win.jsp</result>
+    	</action>
+    	<!-- 查询统计_发送情况详细__[弹出] -->
+    	<action name="setsmsitemlistwin2" class="smsItemlistAction" method="setSmsItemlistWin">
+    		<result name="success">/Sgsdx/Query/Send_Win2.jsp</result>
+    	</action>    	
+    </package>
+</struts>    

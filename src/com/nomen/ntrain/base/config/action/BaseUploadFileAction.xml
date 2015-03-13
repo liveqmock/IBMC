@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+    "http://struts.apache.org/dtds/struts-2.0.dtd">
+<!-- 
+	@description 基础管理_代码设置 
+    @author 连金亮
+    @date 2010-12-26
+ -->
+<struts>
+    <package name="BaseUploadFile" extends="struts-default" namespace="/"> 
+    	<action name="uploadFile" class="baseUploadFileAction" method="uploadFile">
+    	</action>
+    </package>  
+</struts>

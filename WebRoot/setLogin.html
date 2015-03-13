@@ -1,0 +1,74 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<script type="text/javascript" src="Script/jquery-1.4.2.min.js"></script>
+</head>
+<body>
+</body>
+<script type="text/javascript"> 
+$(function(){
+	$.ajax({
+			  type : "post",
+			  url : "http://192.168.1.65:8888/ptrain/setlogin2.shtml",
+			  data: {},
+			  async: false,
+			  dataType:"json",
+			  success : function(result) {
+				  		var status = result.status;
+				  		alert(status == "success");
+				  		console.log(result);
+			  			if (status == "success") {
+			  				var auths = result.auths;
+			  				
+			  				if(auths.menu_meet != "" && auths.menu_meet!=undefined){
+			  					alert("1");
+				  				window.location.href = "http://192.168.1.66/manager/meeting.action?cmd=30017";
+		  					}else if(auths.menu_resource != "" && auths.menu_resource != undefined){
+			  					alert("2");
+		  						window.location.href = "http://192.168.1.66/manager/filePlay.action?cmd=10001";
+		  					}else if(auths.menu_user != "" && auths.menu_user != undefined){
+			  					alert("3");
+	  							window.location.href = "http://192.168.1.66/manager/user.action?cmd=80001";
+		  					}else if(auths.menu_userGroup != "" && auths.menu_userGroup != undefined){
+			  					alert("4");
+	  							window.location.href = "http://192.168.1.66/manager/userGroup.action?cmd=50005";
+		  					}else {
+			  					alert("5");
+		  						//$("#alertSpan").html(Message.login_auth_nothing);
+		  						alert(Message.login_auth_nothing);
+		  						window.location.href = "http://192.168.1.66/home/main.action";
+		  					}
+						}else if(status == "usernameOrPwd_null"){
+							//$("#alertSpan").html(Message.login_usernameOrPwd_null);
+						}else if(status == "user_loginErr"){
+							//$("#alertSpan").html(Message.login_user_loginErr);
+						}else if(status == "username_noexsits"){
+							//$("#alertSpan").html(Message.login_username_noexsits);
+						}else if(status == "password_error"){
+							//$("#alertSpan").html(Message.login_password_error);
+						}else if(status == "have_noauth_tobackstage"){//普通用户登录进入前台界面
+							window.location.href = "http://192.168.1.66/home/main.action";
+						}else{
+							if (status != "repeatLogin_confirm") {
+        						//$("#repeatLogin").val(0);
+							} else {
+								//if(window.confirm(Message.login_confirm_continue_sign))
+								//{
+									//$("#repeatLogin").val(1);
+        							//$("#LoginButton").click();
+								//}else{
+									//$("#repeatLogin").val(0);
+								//}
+							}
+ 
+							if(status=="repeatLogin_logined")
+							{
+								alert(Message.login_otherLocation_signIn);
+							}
+							
+						}
+					}
+		      });
+});
+</script>
+</html>

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!--
+@description 短信接口_短信内容
+@author 林木山
+@date 2012-7-30
+-->
+<sqlMap namespace="SmsItemlist">
+	<typeAlias alias="smsItemlistBean" type="com.nomen.ntrain.sgsdx.bean.SmsItemlistBean"/>
+	<!-- 查找短信接口_短信内容列表信息  -->
+	<select id="findSmsItemlistList" resultClass="smsItemlistBean" parameterClass="map">
+		<isNotEmpty property="rownum">
+			select * from (
+		</isNotEmpty>
+		select 
+			sil.id,to_char(sil.phonenum) phone,sil.sendtxt sms,sendcount,
+			to_char(sil.status) sendsign
+		from 
+			man_card_tracemsg sil
+		where 1=1
+		<isNotEmpty prepend="and" property="no_send">
+			/***未发送的记录**/
+			status=0
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="had_send">
+			/***未发送或发送失败记录**/
+			nvl(status,-1) != #had_send#
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="sendcount">
+		<![CDATA[
+			nvl(sendcount,0) < #sendcount#
+		]]>
+		</isNotEmpty>
+		order by id
+		<isNotEmpty property="rownum">
+		<![CDATA[
+			) where rownum <= #rownum#
+		]]>
+		</isNotEmpty>
+	</select>
+
+	<!-- 更新短信接口_短信内容信息 -->
+	<update id="updateSmsItemlist" parameterClass="smsItemlistBean">
+		update man_card_tracemsg 
+		set  senddate = sysdate,
+			 sendcount = to_number(nvl((select sendcount from man_card_tracemsg where id = #id#),0))+1,
+			 status = #sendsign#
+		where  id = #id#
+	</update>
+	
+	
+	<!-- 查找短信接口_短信内容信息-->
+	<select id="findSmsItemlistBeanById" resultClass="smsItemlistBean" parameterClass="string">
+	    select 
+	     	sil.id,to_char(sil.phonenum) phone,sil.sendtxt sms,
+			to_char(sil.status) sendsign
+	    from 
+	      man_card_tracemsg sil
+	    where sil.id = #id#
+	</select>
+	
+</sqlMap>

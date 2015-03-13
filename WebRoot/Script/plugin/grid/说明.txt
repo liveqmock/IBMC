@@ -1,0 +1,24 @@
+本目录中的js重新命名如下：
+mmGrid.js  -- grid.js
+mmpaginator.js -- grid-pagi.js
+modernizr-2.6.2.js plugins.js  暂时没有用到
+使用参考地址：http://miemiedev.github.io/mmGrid/examples/index.html
+
+
+
+grid_down.js  -- 是针对查询,搜索条件框是隐藏,下拉的那种类型
+grid.js -- 是针对查询条件出现在分页的前面的搜索类型
+grid_down.js 和 grid.js 两者之间的js区别有一下几点
+1:grid_down.js 中的 $backboard是没有注释的 并且中间有加入一个div为searchMain
+//==================自定义搜索=================
+if($("#mySearchMain").size()>0){
+   $backboard.append('<h1>搜索</h1>');
+   $backboard.append("<div id='searchMain'>"+$("#mySearchMain").html()+"</div>");
+   $("#mySearchMain").html('');
+}
+2:grid_down.js 中获取 form 表单中的元素的方法是不一样的
+//循环获取查询条件(searchMain)中的表单元素
+var formobj = $("#searchMain #form1")[0];
+
+两个js均可切换使用 且页面不需要做任何的改动
+参考页面有 Data--Userz--Nor_Main_List1.jsp页面

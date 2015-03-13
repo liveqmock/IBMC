@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+    "http://struts.apache.org/dtds/struts-2.0.dtd">
+<!-- 
+	@description 下载公用 
+    @author 连金亮
+    @date 2010-12-26
+ -->
+<struts>
+    <package name="DownFile" extends="struts-default">
+    	<action name="downfile" class="com.nomen.ntrain.base.action.DownloadAction">
+    		<param name="inputPath">${inputPath}</param>
+			<result name="success" type="stream">
+				<param name="contentType">application/octet-stream;charset=ISO8859-1</param>
+				<param name="inputName">inputStream</param>
+				<param name="contentDisposition">
+					attachment;fileName="${fileName}"
+				</param>
+				<param name="bufferSize">4096</param>
+			</result>
+			<result name="input">/Include/NoData.jsp</result>
+    	</action>
+    </package>  
+</struts>

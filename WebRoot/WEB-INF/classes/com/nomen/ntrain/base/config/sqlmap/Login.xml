@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 
+	@description 登录信息sql映射  
+    @author 连金亮
+    @date 2010-12-26
+ -->
+<sqlMap namespace="Login">
+	<typeAlias alias="loginbean" type="com.nomen.ntrain.base.bean.LoginBean" />
+    <typeAlias alias="baselogonbean" type="com.nomen.ntrain.base.bean.BaseLogonBean" />
+    <!-- 通过身份证号查询登录人员的信息 -->
+    <select id="getLoginByUser" parameterClass="java.util.Map" resultClass="loginbean">
+    	select * from vi_login_user t 
+    	where userpsd=#userpsd# 
+         and upper(username)=upper(#username#)
+    </select>
+    
+    
+    <!-- 添加登录日志信息 -->
+    <insert id="insertBaseLogon" parameterClass="baselogonbean">
+    	<selectKey resultClass="java.lang.String" keyProperty="id">
+    		select seq_base_logon.nextval as id from dual
+    	</selectKey>
+    	<![CDATA[
+    		insert into tb_base_logon(id,unitid,userid,username,deptname,intime)
+    		values(#id#,#unitid#,#userid#,#username#,#deptname#,sysdate)
+    	]]>
+    </insert> 
+    
+    <!-- 登记注销日志信息 -->
+    <update id="updateBaseLogon" parameterClass="string"> 
+    	update tb_base_logon
+    	set outtime=sysdate
+    	where id=#id#  
+    </update>    
+	
+    <!-- 修改密码 -->
+    <update id="updatePassword" parameterClass="loginbean">
+    	update syn_user set userpsd = #userpsd# where id = #id#
+    </update>
+</sqlMap>

@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!--
+@description 记录操作数据_用于同webservice同步
+@author ljl
+@date 2015-1-29
+-->
+<sqlMap namespace="SynData">
+	<typeAlias alias="synDataBean" type="com.nomen.ntrain.ibmc.bean.SynDataBean"/>
+	<typeAlias alias="sysCommunityBean" type="com.nomen.ntrain.ibmc.bean.SysCommunityBean"/>
+	<!-- 查找记录操作数据 用于同webservice同步信息 -->
+	<select id="findSynDataBeanById" resultClass="synDataBean" parameterClass="string">
+		select 
+			modesign,optid,downsign,opttype,id,commpath,webservicepath
+	    from syn_data 
+	    where 1=1
+	    and (commpath=#value# or commpath like '%/'||#value#||'/%')
+	    and (downsign=0)
+	    and webservicepath is not null
+	    order by id
+	</select>
+
+	<!-- 查询需要同步的数据量 -->
+	<select id="findNeedSynDataCount" resultClass="string" parameterClass="string">
+			select 
+				count(1) t
+			from syn_data 
+			where (downsign=0 or downsign=-1)
+			and   commpath like '%/'||#value#||'/%'
+	</select>
+
+	<!-- 查询需要同步的数据（待同步、以及同步失败的数据） -->
+	<select id="findNeedSynDataList" resultClass="synDataBean" parameterClass="string">
+		select *
+		from
+		(
+			select 
+				modesign,optid,to_char(optdate,'yyyy-mm-dd') optdate,
+				downsign,to_char(downdate,'yyyy-mm-dd') downdate,
+				opttype,id 
+			from syn_data 
+			where (downsign=0 or downsign=-1)
+			and   commpath like '%/'||#value#||'/%'
+			order by id
+		)
+		<![CDATA[
+		where rownum <= 50
+		]]>
+	</select>
+
+	<!-- 查询同步失败的数据 -->
+	<select id="findErrSynDataList" resultClass="synDataBean">
+		select 
+			modesign,optid,to_char(optdate,'yyyy-mm-dd') optdate,
+			downsign,to_char(downdate,'yyyy-mm-dd') downdate,
+			opttype,id 
+		from syn_data 
+		where (downsign=0 or dowsign=-1)
+		order by id
+	</select>
+
+	<!-- 添加记录操作数据 用于同webservice同步信息  -->
+	<insert id="insertSynDataBean" parameterClass="synDataBean" >
+		<selectKey resultClass="java.lang.String" keyProperty="id">
+			select seq_syn_data.nextval as id from dual
+		</selectKey>
+		insert into syn_data
+		  (modesign,optid,optdate,downsign,downdate,opttype,id,commpath,webservicepath)
+		values
+		  (#modesign#,#optid#,sysdate,0,null,#opttype#,#id#,#commpath#,#webservicepath#)
+	</insert> 
+
+	<!-- 更新记录操作数据 用于同webservice同步信息 -->
+	<update id="updateSynDataBean" parameterClass="synDataBean">
+		update syn_data set 
+			id=#id#,
+			downdate=sysdate,
+			downsign = #downsign#
+		where id=#id#
+	</update>
+
+	<!-- 删除记录操作数据 用于同webservice同步信息 -->
+	<delete id="deleteDataData" parameterClass="map">
+		delete from syn_data 
+		where id=#id# 
+	</delete>
+	
+	<!-- 通过ID获取记录在Community表中的 commpath -->
+	<select id="findSysCommPathById" resultClass="string" parameterClass="string">
+		SELECT 
+			COMMPATH
+		FROM SYS_COMMUNITY SC
+		where SC.ID=#value#
+	</select>
+	
+	<!-- 通过ID获取记录在Community表中的 commpath -->
+	<select id="findSysCommTaskSignById" resultClass="string" parameterClass="string">
+		SELECT 
+			TASKSIGN
+		FROM SYS_COMMUNITY SC
+		where SC.ID=#value#
+	</select>
+
+	<!-- 更新记录操作数据 用于同webservice同步信息 -->
+	<update id="updateSysCommTaskSignById" parameterClass="sysCommunityBean">
+		update sys_community 
+		set 
+			tasksign=#tasksign#
+		where id=#id#
+	</update>
+	
+	
+</sqlMap>

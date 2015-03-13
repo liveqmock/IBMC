@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 
+	@description 错误日志
+    @author 连金亮
+    @date 2013-11-22
+ -->
+<sqlMap namespace="BaseException">
+	<typeAlias alias="baseExceptionBean" type="com.nomen.ntrain.base.bean.BaseExceptionBean"/>
+	
+ 	<!-- 错误列表 -->
+	<select id="findBaseExceptionList" parameterClass="map" resultClass="baseExceptionBean">
+		SELECT 
+			ID,ERRORCLASS, ERRORMETHOD, ERRORMSG, ERRORDATE 
+		FROM BASE_EXCEPTION
+		WHERE 1=1
+		<isNotEmpty property="year">
+			<![CDATA[
+			AND TO_CHAR(ERRORDATE,'YYYY')=#year#
+			]]>
+		</isNotEmpty>
+	    ORDER BY ERRORDATE DESC
+	</select>
+	
+ 	<!-- 详细 -->
+	<select id="findBaseExceptionBean" parameterClass="string" resultClass="baseExceptionBean">
+		SELECT 
+			ERRORCLASS, ERRORMETHOD, ERRORMSG, ERRORDATE 
+		FROM BASE_EXCEPTION
+		WHERE ID=#value#
+	</select>
+	
+ 	<!-- 新增日志 -->
+	<insert id="insertBaseExceptionBean" parameterClass="baseExceptionBean" >
+		<selectKey resultClass="string" keyProperty="id">
+    		SELECT SEQ_BASE_EXCEPTION.NEXTVAL AS ID FROM DUAL
+    	</selectKey>
+    	INSERT INTO BASE_EXCEPTION
+		(ID,ERRORCLASS, ERRORMETHOD, ERRORMSG)
+		VALUES
+		(#id#,#errorclass#, #errormethod#, #errormsg#)
+	</insert>
+	
+ 	<!-- 根据id删除记录 -->
+ 	<delete id="deleteBaseException" parameterClass="map">
+		DELETE FROM BASE_EXCEPTION
+		WHERE  1=1
+		<isNotEmpty property="year">
+			<![CDATA[
+			AND TO_CHAR(ERRORDATE,'YYYY')=#year#
+			]]>
+		</isNotEmpty>
+ 	</delete>
+</sqlMap>

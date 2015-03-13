@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+    "http://struts.apache.org/dtds/struts-2.0.dtd">
+<!--
+@description 系统管理_系统配置
+@author ljl
+@date 2015-02-28
+-->
+<struts>
+    <package name="SysConfig" extends="nsoft-ic" namespace="/Sys/Config">
+     	<!-- ==========================    JQuery相关     ============================ -->
+     	<!-- 有效期标准以及收费列表 -->
+    	<action name="setsysconfigofstandar" class="sysConfigAction" method="setSysConfigOfStandar">
+    		<result name="success">/Ibmc/System/Standar_List.jsp</result>	
+    	</action>
+    	
+    	<!-- 有效期标准以及收费保存 -->
+   		<action name="savesysconfigofstandar" class="sysConfigAction" method="saveSysConfigOfStandar">
+    		<result name="success">/Ibmc/System/Standar_List.jsp</result>	
+   		</action>
+	</package>
+</struts>
+

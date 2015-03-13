@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+	
+	
+	<!-- 短信_内容 -->
+	<bean id="smsItemlistDAO" class="com.nomen.ntrain.sgsdx.dao.implement.SmsItemlistDAOImpl" parent="nsoftDao"></bean>
+	<bean id="smsItemlistService" class="com.nomen.ntrain.sgsdx.service.implement.SmsItemlistServiceImpl" parent="baseService">
+		<property name="smsItemlistDAO" ref="smsItemlistDAO"></property>
+		<property name="smsEngineCoustomer" ref="smsEngineCoustomer"></property>
+	</bean>
+	<bean id="smsItemlistAction" class="com.nomen.ntrain.sgsdx.action.SmsItemlistAction" scope="prototype">
+		<property name="smsItemlistService" ref="smsItemlistService" />
+	</bean>	
+	<!-- 短信内容更新和日志记录接口 -->
+	<bean id="smsSendLogDAO" class="com.nomen.ntrain.sgsdx.tool.SmsSendLogDAOImpl" parent="baseService">
+		<property name="smsItemlistDAO" ref="smsItemlistDAO"></property>
+	</bean>			
+	
+	<!--==============定时器[每天08:0-20:0运行]===================== -->
+	<bean id="myjobDetail"
+		class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="smsItemlistService"/>
+		<property name="targetMethod">
+			<value>sendSmsItemlist</value>
+		</property>
+		<property name="concurrent" value="false"/> 
+	</bean>
+	<bean id="cronTrigger" 
+		class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail">
+			<ref bean="myjobDetail"/>
+		</property>
+		<property name="cronExpression">
+			<value>0 0 08-20/1 * * ?</value>			
+		</property>
+	</bean>
+	
+	<bean id="myScheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<property name="triggers">
+			<list>
+                 <ref bean="cronTrigger"/>
+             </list>
+		</property>
+	</bean>
+	
+	<!-- 配置短信猫功能 -->
+	<bean id="smsEngine" class="com.nomen.ntrain.sgsdx.tool.SmsEngine">
+		<property name="comNamePort" value="1"></property>
+		<property name="baudRate" value="115200"></property>
+	</bean>
+	
+	<bean id="smsEngineCoustomer" class="com.nomen.ntrain.sgsdx.tool.SmsEngineCoustomer">
+		<property name="smsEngine" ref="smsEngine"></property>
+		<property name="smsSendLogDAO" ref="smsSendLogDAO"></property>
+	</bean>
+</beans>

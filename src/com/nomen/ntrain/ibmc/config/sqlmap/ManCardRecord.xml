@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!--
+@description 门卡管理_刷卡历史记录表
+@author ljl
+@date 2015-1-23
+-->
+<sqlMap namespace="ManCardRecord">
+	<typeAlias alias="manCardRecordBean" type="com.nomen.ntrain.ibmc.bean.ManCardRecordBean"/>
+	<typeAlias alias="manPeoBean" type="com.nomen.ntrain.ibmc.bean.ManPeoBean"/>
+	<!-- 刷卡详细 -->
+	<select id="findManCardRecordBeanById" resultClass="manCardRecordBean" parameterClass="string">
+		select id,
+			cardid,
+		   cardno,
+	       cardmac,
+	       roomid,
+       	   (select cardtype from man_card c where c.id = r.cardid)cardtype,
+	       roomname,
+       	   ownername,
+	       rentname,
+	       houseid,
+	       housename,
+	       equipname,
+	       equipid,
+	       to_char(touchdate,'yyyy-MM-dd HH24:mi:ss') touchdate,
+	       touchimg
+	   from man_card_record r
+	   where id = #value#
+	</select>
+
+	<!-- 刷卡列表 -->
+	<select id="findManCardRecordList" resultClass="manCardRecordBean" parameterClass="map">
+		select id,
+			cardid,
+		   cardno,
+	       cardmac,
+	       roomid,
+       	   (select cardtype from man_card c where c.id = r.cardid)cardtype,
+	       roomname,
+       	   ownername,
+	       rentname,
+	       houseid,
+	       housename,
+	       commpath,
+	       equipname,
+	       equipid,
+	       to_char(touchdate,'yyyy-MM-dd HH24:mi:ss') touchdate,
+	       touchimg
+		from man_card_record  r
+		where 1=1
+		<isNotEmpty prepend="" property="commpath">
+    		and	r.commpath like #commpath#||'/%'
+		</isNotEmpty>
+		<isNotEmpty prepend="" property="cardtype">
+			and exists (
+				select 1 from man_card c
+				where c.cardno = r.cardno
+				and   c.cardtype = #cardtype#
+			)
+		</isNotEmpty>
+		<isNotEmpty prepend="" property="keyword">
+			<isEqual property="fields" compareValue="cardmac">
+				and cardmac like '%'||#keyword#||'%'
+			</isEqual>
+			<isEqual property="fields" compareValue="cardno">
+				and cardno like '%'||#keyword#||'%'
+			</isEqual>
+			<isEqual property="fields" compareValue="rentname">
+				and rentname like '%'||#keyword#||'%'
+			</isEqual>
+			<isEqual property="fields" compareValue="ownername">
+				and ownername like '%'||#keyword#||'%'
+			</isEqual>
+		</isNotEmpty>
+        <isNotEmpty property="sortfield">
+        	order by $sortfield$
+    	</isNotEmpty>
+	</select>
+
+	<!-- 同步门卡刷卡记录  -->
+	<procedure id="saveSynUnlockData" parameterClass="manCardRecordBean">  
+    	{call ibmc_syn_unlock.syn_unlock(#synid#,#cardid#,#equipid#,#touchdate#,#touchimg#)}
+	</procedure>
+	
+	<!-- 删除门卡刷卡数据 -->
+	<delete id="deleteManCardRecordById" parameterClass="string">
+		delete from man_card_record where  id = #id#
+	</delete>
+	
+	<!-- 删除[省/市/区/村/房产/房间ID]刷卡数据 -->
+	<delete id="deleteManCardRecordByCommId" parameterClass="string">
+		delete from man_card_record c
+		where 1=1
+		and (
+				houseid in(select id from sys_community where (id=#value# or commpath like '%/'||#value#||'/%'))
+				or
+				roomid in(select id from sys_community where (id=#value# or commpath like '%/'||#value#||'/%'))
+		    )
+	</delete>
+	
+	<!-- 查找刷卡时人员信息 -->
+	<select id="findManPeoBeanByCardId" resultClass="manPeoBean" parameterClass="string">
+		select 
+			c.id, ownersign, rentsign, name, sex, to_char(birthday,'yyyy-mm-dd')birthday,
+			nation, idcard, telephone, unitname, address, photopath, remark, 
+			(select username from sys_user u where u.id = optuserid)optusername,
+			to_char(c.createdate,'yyyy-mm-dd')createdate, to_char(c.updatedate,'yyyy-mm-dd')updatedate, optuserid 
+		from man_peo p,
+         man_card c
+		where c.id = #cardid#
+		  and c.rentid = p.id
+	</select>
+	
+	<!-- 查找刷卡时人员信息 -->
+	<select id="findManCardRecordMaxSynId" resultClass="string" parameterClass="map">
+		select 
+			nvl(max(synid),0) x
+        from man_card_record c
+	</select>
+	
+</sqlMap>

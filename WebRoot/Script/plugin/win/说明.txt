@@ -1,0 +1,6 @@
+该目录下面存放：
+jquery.jBox-2.3.min.js
+jquery.jBox-zh-CN.js
+为实现统一命名规范，改为win
+
+使用参考地址：http://jjsp.jinjiang.gov.cn:8888/js/jbox-v2.3/jbox-demo.html

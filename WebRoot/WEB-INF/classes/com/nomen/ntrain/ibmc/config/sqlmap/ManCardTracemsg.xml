@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!--
+@description 刷卡短信通知记录表
+@author 
+@date 2015-02-07
+-->
+<sqlMap namespace="ManCardTracemsg">
+	<typeAlias alias="manCardTracemsgBean" type="com.nomen.ntrain.ibmc.bean.ManCardTraceMsgBean"/>
+	<!-- 刷卡短信通知列表 -->
+	<select id="findManCardTracemsgBeanList" resultClass="manCardTracemsgBean">
+		select 
+			traceid, to_char(touchdate,'yyyy-mm-dd')touchdate, to_char(senddate,'yyyy-mm-dd')senddate, 
+			sendcount, sendtxt, phonenum, rentname, iffee, status ,
+			(select phone from man_card_tracephone p where p.traceid = m.traceid)phone
+		from man_card_tracemsg m
+		where traceid = #traceid#
+		<isNotEmpty prepend="" property="keyword">
+			<isEqual property="fields" compareValue="sendtxt">
+				and sendtxt like '%'||#keyword#||'%'
+			</isEqual>
+		</isNotEmpty>
+        <isNotEmpty property="sortfield">
+        	order by $sortfield$
+    	</isNotEmpty>
+	</select>
+	
+</sqlMap>

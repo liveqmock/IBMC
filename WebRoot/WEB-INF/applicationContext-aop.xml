@@ -1,0 +1,76 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:aop="http://www.springframework.org/schema/aop"
+	   xmlns:tx="http://www.springframework.org/schema/tx"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd">
+	
+	<!-- ===============================以下为配置事务拦截========================-->
+	<!-- 配置事务特性 -->
+	<tx:advice id="txAdvice" transaction-manager="transactionManager">
+		<tx:attributes>
+			<tx:method name="insert*" propagation="REQUIRED"/>
+			<tx:method name="modify*" propagation="REQUIRED"/>
+			<tx:method name="delete*" propagation="REQUIRED"/>
+			<tx:method name="update*" propagation="REQUIRED"/>
+			<tx:method name="save*" propagation="REQUIRED"/>
+			<tx:method name="synDataToWebService" propagation="REQUIRED"/>
+			<tx:method name="init*" propagation="REQUIRED"/>
+			<tx:method name="*" read-only="true"/>
+		</tx:attributes>
+	</tx:advice>
+	
+	<!-- 配置哪些类的方法需要进行事务管理 -->
+	<aop:config>
+       <aop:pointcut id="allManagerMethod" expression="(execution(* com.nomen.ntrain.*.service.*.*.*(..))) OR (execution(* com.nomen.ntrain.ibmc.util.SynWebServiceUtil.synDataToWebService(..)))"/>
+       <aop:advisor advice-ref="txAdvice" pointcut-ref="allManagerMethod" order="2"/>
+    </aop:config>
+    
+	<!-- 配置freemarkerManager -->
+	<bean id="freemarkerManager" class="org.apache.struts2.views.freemarker.FreemarkerManager" />
+	<bean id="springBeanUtils" class="com.nomen.ntrain.util.SpringBeanUtils" />
+	
+	<!-- ===============================以下为配置错误日志拦截器========================-->
+	<aop:config>  
+        <aop:aspect id="TestAspect" ref="exceptionAspect" order="1">  
+            <!--配置com.spring.service包下所有类或接口的所有方法-->  
+            <aop:pointcut id="dbOper" expression="execution(* com.nomen.ntrain.*.service.*.*.*(..))" />
+            <!-- 
+            <aop:before pointcut-ref="dbOper" method="doBefore"/>  
+            <aop:after pointcut-ref="dbOper" method="doAfter"/>  
+            <aop:around pointcut-ref="dbOper" method="doAround"/>  
+             -->
+            <aop:after-throwing pointcut-ref="dbOper" method="doThrowing" throwing="ex"/>  
+        </aop:aspect>
+    </aop:config> 
+	<bean id="exceptionAspect" class="com.nomen.ntrain.util.ExceptionAspect">
+	    <property name="baseExceptionService">
+	    	<ref bean="baseExceptionService" /> 
+	    </property>
+	</bean>
+	
+	<!-- ===============================以下为配置角色、菜单拦截器========================-->
+	<aop:config>  
+        <aop:aspect id="netMenuAndRoleAspect" ref="netMenuAndRoleAspectBean" order="10">  
+            <!--配置com.spring.service包下所有类或接口的所有方法-->  
+            <aop:pointcut id="dbNetMenuAndRoleAspect1" expression="execution(* com.nomen.ntrain.base.service.BaseMenuService.*(..))" />
+            <aop:after pointcut-ref="dbNetMenuAndRoleAspect1" method="doAfter"/>
+            <aop:pointcut id="dbNetMenuAndRoleAspect2" expression="execution(* com.nomen.ntrain.base.service.BaseRoleService.*(..))" />
+            <aop:after pointcut-ref="dbNetMenuAndRoleAspect2" method="doAfter"/>
+        </aop:aspect>  
+    </aop:config> 
+	<bean id="netMenuAndRoleAspectBean" class="com.nomen.ntrain.util.BaseMenuAndRoleAspect"></bean>
+	
+	
+	
+	<!-- ===============================以下为操作日志拦截器======================== -->
+	<aop:aspectj-autoproxy proxy-target-class="true">
+		<aop:include name="optInterceptor"/>
+	</aop:aspectj-autoproxy>
+	<bean id="optInterceptor" class="com.nomen.ntrain.interceptor.OptInterceptor">
+		<property name="baseOptLogService" ref="baseOptLogService"></property>
+	</bean>
+	
+</beans>

@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!-- 
+	@description 莆田岗位培训_系统菜单
+    @author 连金亮
+    @date 2013-11-08
+ -->
+<sqlMap namespace="BaseMenu">
+	<typeAlias alias="baseMenuBean" type="com.nomen.ntrain.base.bean.BaseMenuBean"/>
+ 	<!-- 获取菜单列表[角色/菜单维护应用] -->
+	<select id="findBaseMenuTreeList" parameterClass="map" resultClass="baseMenuBean">
+		SELECT 
+			ID, NAME, LEV,REL, URL, PUR, SORTNUM, SPECSIGN, FATHERID,USESIGN
+		FROM BASE_MENU M
+    	WHERE 1=1
+    	<isNotEmpty property="purfilter">
+    	AND M.PUR != 0 
+    	</isNotEmpty>
+    	<isNotEmpty property="usesign">
+    	AND M.USESIGN =#usesign#
+    	</isNotEmpty>
+		START WITH FATHERID =#fatherid#
+		CONNECT BY PRIOR ID = FATHERID
+	    ORDER SIBLINGS BY SORTNUM
+	</select>
+	
+	<!-- 根据id查找记录 -->
+	<select id="findBaseMenuBeanById" parameterClass="string" resultClass="baseMenuBean">
+		SELECT 
+      		ID, NAME, LEV,REL, URL, PUR, SORTNUM, SPECSIGN, FATHERID,USESIGN
+    	FROM BASE_MENU M  
+    	WHERE ID = #id#
+	</select>
+	
+	<!-- 删除菜单 -->
+	<delete id="deleteBaseMenu" parameterClass="string">
+		DELETE BASE_MENU WHERE ID  IN 
+    	(SELECT ID FROM BASE_MENU
+    	 START WITH ID = #id#
+    	 CONNECT BY PRIOR ID = FATHERID)
+	</delete>
+	
+	<!-- 获取下一个菜单排序号 -->
+	<select id="findBaseMenuNextSort" parameterClass="string" resultClass="string">
+		SELECT NVL(COUNT(SORTNUM),0)+1 FROM BASE_MENU
+    	WHERE 1=1
+    	AND FATHERID = #fatherid#
+	</select>
+	
+	<!-- 新增菜单 -->
+	<insert id="insertBaseMenu" parameterClass="baseMenuBean">
+		<selectKey resultClass="string" keyProperty="id">
+    		SELECT SEQ_BASE_MENU.NEXTVAL AS ID FROM DUAL
+    	</selectKey>
+    	<![CDATA[
+	    	INSERT INTO BASE_MENU
+			  (ID, NAME, LEV, REL,URL, PUR, SORTNUM, SPECSIGN, FATHERID, USESIGN)
+			VALUES
+			  (#id#, #name#, #lev#, #rel#,#url#, #pur#, #sortnum#, #specsign#, #fatherid#, #usesign#)
+     	]]>
+	</insert>
+	
+	<!-- 修改菜单 -->
+	<update id="updateBaseMenu" parameterClass="baseMenuBean">
+		UPDATE BASE_MENU
+		   SET ID = #id#,
+		       NAME = #name#,
+		       REL = #rel#,
+		       URL = #url#,
+		       PUR = #pur#,
+		       SORTNUM = #sortnum#,
+		       SPECSIGN = #specsign#
+		 WHERE ID = #id#
+	</update>
+	
+	<!-- 修改启用禁用标记 -->
+	<update id="updateBaseMenuUsesign" parameterClass="baseMenuBean">
+		UPDATE BASE_MENU 
+    	SET 
+    		USESIGN=#usesign#
+    		WHERE ID IN 
+	    	(SELECT ID FROM BASE_MENU
+	    	 START WITH ID = #id#
+	    	 CONNECT BY PRIOR ID = FATHERID)
+	</update>
+	
+	<!-- 获取登录人员具有的菜单 -->
+	<select id="findBaseMenuByUser" parameterClass="map" resultClass="baseMenuBean">
+		SELECT 
+          * 
+        FROM (
+          SELECT * 
+          FROM BASE_MENU M
+          WHERE M.ID IN(
+              SELECT
+                  ID
+              FROM
+              (
+                  SELECT 
+                       BM.ID
+                  FROM BASE_ROLE_USER RU,
+                       BASE_ROLE BR,
+                       BASE_ROLE_MENU RM,
+                       BASE_MENU BM
+                  WHERE ','||RU.ROLEIDS||',' LIKE '%,' ||BR.ID ||',%'
+                  AND   BR.ID = RM.ROLEID
+                  AND   RM.MENUID = BM.ID
+                  AND   RU.USERID = #userid#
+                  AND   BM.USESIGN = 1
+                  UNION 
+                    SELECT 
+                       ID
+                    FROM BASE_MENU K
+                    START WITH ID IN(
+                    SELECT 
+                         BM2.ID
+                    FROM BASE_MENU BM2 
+                    WHERE BM2.USESIGN=1 
+                    AND PUR=0
+                    )
+                    CONNECT BY  ID =PRIOR FATHERID
+               ) 
+               GROUP BY ID
+            )
+        )
+    	<isNotEmpty property="lev">
+    	WHERE LEV =#lev#
+    	</isNotEmpty>
+        START WITH FATHERID = #fatherid#
+        CONNECT BY PRIOR ID = FATHERID
+        ORDER SIBLINGS BY SORTNUM
+	</select>
+	
+	<!-- 获取菜单列表[该方法用来定时加载菜单] -->
+	<select id="findBaseMenuListByThread" parameterClass="map" resultClass="baseMenuBean">
+		SELECT 
+			*
+		FROM BASE_MENU M	
+    	WHERE 1=1
+    	AND M.PUR != 0 
+    	AND M.URL IS NOT NULL
+    	AND M.USESIGN =1
+	</select>
+</sqlMap>
+

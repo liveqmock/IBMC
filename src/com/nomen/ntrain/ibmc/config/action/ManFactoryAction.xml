@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+    "http://struts.apache.org/dtds/struts-2.0.dtd">
+<!--
+ @description 设备管理
+ @author 郑学仕
+ @date 2015-1-20
+-->
+<struts>
+    <package name="ManFactory" extends="nsoft-ic" namespace="/Man/Dev">
+    	<!-- ==========================    JQuery相关     ============================ -->
+    	<!-- 厂商管理[列表] -->
+    	<action name="listManFactoryByJq" class="manFactoryAction" method="listManFactoryByJq"></action>
+    	<!-- 厂商管理[删除] -->
+    	<action name="deleteManFactoryByJq" class="manFactoryAction" method="deleteManFactoryByJq"></action>		
+		<!-- 厂商管理型号[删除] -->
+        <action name="deleteManFacConfigByJq" class="manFactoryAction" method="deleteManFacConfigByJq"></action>
+    	<!-- 查询厂商型号列表 -->
+        <action name="findManFacModelByJq" class="manFactoryAction" method="findManFacModelByJq"></action>
+    	
+    
+    	
+    
+    	<!-- ==============================   厂商管理表  ================================  -->
+    	
+    	<!-- 跳转到[厂商管理]列表页面 -->
+    	<action name="toforwardfactory" class="manFactoryAction" method="toForwardFactory">
+    		<result name="success">/Ibmc/ManDev/Factory_List.jsp</result>	
+		</action>
+		
+		<!-- 跳转到[厂商管理]新增,修改页面 -->
+    	<action name="setmanfactory" class="manFactoryAction" method="setManFactory">
+    		<result name="success">/Ibmc/ManDev/Factory_Set.jsp</result>	
+		</action>
+		
+		<!-- 保存[厂商管理]新增,修改操作 -->
+		<action name="savemanfactory" class="manFactoryAction" method="saveManFactory">
+    		<result name="success">/Ibmc/ManDev/Factory_List.jsp</result>	
+		</action>
+
+    </package>
+</struts>

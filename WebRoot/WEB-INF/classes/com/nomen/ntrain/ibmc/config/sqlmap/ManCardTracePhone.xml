@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!--
+@description 刷卡短信通知配置表
+@author 
+@date 2015-02-10
+-->
+<sqlMap namespace="ManCardTracePhone">
+	<typeAlias alias="manCardTracePhoneBean" type="com.nomen.ntrain.ibmc.bean.ManCardTracePhoneBean"/>
+	<!-- 通过cardid查询刷卡短信通知配置表信息 -->
+	<select id="findManCardTracePhoneBean" resultClass="manCardTracePhoneBean" parameterClass="string">
+		select 
+			traceid, cardid, phone, optuserid, to_char(createdate,'yyyy-mm-dd')createdate,
+			to_char(updatedate,'yyyy-mm-dd')updatedate ,to_char(enddate,'yyyy-mm-dd')enddate   
+		from man_card_tracephone
+		where cardid = #value#
+	</select>
+	
+	<!-- 添加刷卡短信通知配置表信息 -->
+	<insert id="insertManCardTracePhoneBean" parameterClass="manCardTracePhoneBean" >
+		<selectKey resultClass="java.lang.String" keyProperty="traceid">
+			select seq_man_card_tracephone.nextval as traceid from dual
+		</selectKey>
+		insert into man_card_tracephone
+		  (traceid, cardid, phone, optuserid, createdate, updatedate, enddate)
+		values
+		  (#traceid#, #cardid#, #phone#, #optuserid#, sysdate, sysdate, to_date(#enddate#,'yyyy-mm-dd hh24:mi'))
+	</insert> 
+
+	<!-- 更新刷卡短信通知配置表信息 -->
+	<update id="updateManCardTracePhoneBean" parameterClass="manCardTracePhoneBean">
+		update man_card_tracephone
+         set updatedate = sysdate
+        <isNotEmpty prepend="," property="phone">
+             phone = #phone#
+    	</isNotEmpty>
+        <isNotEmpty prepend="," property="enddate">
+             enddate = to_date(#enddate#,'yyyy-mm-dd hh24:mi')
+    	</isNotEmpty>
+		where  traceid = #traceid#
+	</update>
+	
+</sqlMap>

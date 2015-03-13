@@ -1,0 +1,78 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:aop="http://www.springframework.org/schema/aop"
+	   xmlns:tx="http://www.springframework.org/schema/tx"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd">
+    
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+		<property name="driverClassName" value="${source.driverClassName}" />
+		<property name="url" value="${source.url}" />
+		<property name="username" value="${source.username}" />
+		<property name="password" value="${source.password}" />
+		<property name="initialSize" value="4" />
+		<property name="maxActive" value="20" />
+		<property name="testWhileIdle" value="true" />
+		<property name="validationQuery" value="select 1 from dual" />
+		<property name="testOnBorrow" value="true" />
+		<property name="minIdle" value="100" />
+	</bean>
+	
+	<!--ibatis clob and blob operator	-->
+	<bean id="nativeJdbcExtractor" class="org.springframework.jdbc.support.nativejdbc.CommonsDbcpNativeJdbcExtractor"   
+        lazy-init="true" />   
+	<bean id="oracleLobHandler" class="org.springframework.jdbc.support.lob.OracleLobHandler" lazy-init="true">   
+	    <property name="nativeJdbcExtractor">   
+	        <ref local="nativeJdbcExtractor" />   
+	    </property>   
+	</bean>  
+	
+	<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				 <!--<value>D:/Workspace/NsoftCo/ntrain/WebRoot/WEB-INF/source.properties</value>-->  
+				 <value>/WEB-INF/source.properties</value>
+			</list>
+		</property>
+	</bean>
+
+	
+	<!-- 事务管理器 -->
+	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource">
+			<ref local="dataSource" />
+		</property>
+	</bean>
+
+	<bean id="sqlMapClient" class="org.springframework.orm.ibatis.SqlMapClientFactoryBean">
+		<property name="configLocation">
+			<value>/WEB-INF/sqlMapConfig.xml</value>
+		</property>
+		<property name="dataSource">
+	    	<ref local="dataSource" />
+	  	</property>
+	  	<property name="lobHandler">   
+            <ref local="oracleLobHandler" />   
+        </property>	
+	</bean>
+	
+	<bean id="sqlExecutor" class="com.nomen.ntrain.util.PageSqlExecutor">
+		<property name="dialect">
+			<bean class="com.nomen.ntrain.util.DialectImpl"/>
+		</property>
+	</bean>
+	
+	<bean id="nsoftDao" abstract="true" class="com.nomen.ntrain.util.NsoftBaseDao" init-method="initialize">
+		<property name="dataSource">
+			<ref bean="dataSource"/>
+		</property>
+		<property name="sqlMapClient">
+			<ref bean="sqlMapClient"/>
+		</property>
+		<property name="sqlExecutor">
+			<ref bean="sqlExecutor"/>
+		</property>
+	</bean>
+</beans>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+    "http://struts.apache.org/dtds/struts-2.0.dtd">
+<!-- 
+	@description 系统设置>>菜单设置
+    @author 郑学仕
+    @date 2014-11-14
+ -->
+ <struts>
+    <package name="BaseMenu" extends="nsoft-ic" namespace="/Base/Menu">
+        <!-- 菜单链接跳转 -->
+    	<action name="toforwardmenu" class="baseMenuAction" method="toForwardMenu">
+    		<result name="success">/Base/Menu/Menu_List.jsp</result>
+    	</action>
+    	
+ 		<!-- 列表 -->
+    	<action name="listBaseMenuByJq" class="baseMenuAction" method="listBaseMenuByJq"></action>
+    	<action name="listBaseMenuTreeByJq" class="baseMenuAction" method="listBaseMenuTreeByJq"></action>
+    	<!-- 一级跳转 -->
+    	<action name="setbasemenu1" class="baseMenuAction" method="setBaseMenu1">
+    		<result  name="success">/Base/Menu/Menu_Set1.jsp</result>
+    	</action>
+    	<!-- 二级跳转 -->
+    	<action name="setbasemenu2" class="baseMenuAction" method="setBaseMenu2">
+    		<result  name="success">/Base/Menu/Menu_Set2.jsp</result>
+    	</action>
+    	<!-- 保存 -->
+		<action name="savebasemenu" class="baseMenuAction" method="saveBaseMenu"></action>
+    	<!-- ==============================JQUERY 相关=============================== -->
+    	<!-- 删除 -->	
+		<action name="deleteBaseMenuByJq" class="baseMenuAction" method="deleteBaseMenuByJq"></action>
+		<!-- 启用|禁用 -->
+		<action name="updateBaseMenuUsesignByJq" class="baseMenuAction" method="updateBaseMenuUsesignByJq"></action>
+		<!-- 核查菜单链接是否存在 -->
+		<action name="checkmenuUrlByJq" class="baseMenuAction" method="checkmenuUrlByJq"></action>
+    </package>
+</struts>

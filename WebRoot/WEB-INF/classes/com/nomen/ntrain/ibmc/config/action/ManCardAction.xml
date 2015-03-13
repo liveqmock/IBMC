@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+    "http://struts.apache.org/dtds/struts-2.0.dtd">
+<!--
+@description 门卡管理_门卡库表
+@author ljl
+@date 2015-1-23
+-->
+<struts>
+    <package name="ManCard" extends="nsoft-ic" namespace="/Man/Card">
+		<action name="listManCardsByJq" class="manCardAction" method="listManCardsByJq"/>
+		<action name="listManCardByJq" class="manCardAction" method="listManCardByJq"/>
+		<action name="findManCardBeanByJq" class="manCardAction" method="findManCardBeanByJq"/>
+		<action name="saveManCardByJq" class="manCardAction" method="saveManCardByJq"/>
+		<action name="findManCardByCardNo" class="manCardAction" method="findManCardByCardNo"/>
+		<action name="deleteManCardByJq" class="manCardAction" method="deleteManCardByJq"/>
+		<action name="resetManCardByJq" class="manCardAction" method="resetManCardByJq"/>
+		<action name="findCardRecordImageByJq" class="manCardAction" method="findCardRecordImageByJq"/>
+    	<!-- ==============================   业主卡管理  ================================  -->
+		<!-- 跳转到[业主卡]列表页面 -->
+    	<action name="ownercardlist" class="manCardAction" method="toForwardListPage">
+    		<result name="success">/Ibmc/ManCard/MainCard_List.jsp</result>	
+    		<param name="cardtype">1</param>
+		</action>
+		
+		<!-- 跳转到[业主卡]管理页面 -->
+    	<action name="ownercardwin" class="manCardAction" method="listManCard">
+    		<result name="success">/Ibmc/ManCard/MainCard_Win.jsp</result>	
+    		<param name="cardtype">1</param>
+		</action>
+		
+    	<!-- ==============================   临时卡管理  ================================  -->
+		<!-- 跳转到[临时卡]列表页面 -->
+    	<action name="tempcardlist" class="manCardAction" method="toForwardListPage">
+    		<result name="success">/Ibmc/ManCard/TempCard_List.jsp</result>	
+    		<param name="cardtype">2</param>
+		</action>
+		
+		<!-- 跳转到[临时卡]管理页面 -->
+    	<action name="tempcardwin" class="manCardAction" method="listManCard">
+    		<result name="success">/Ibmc/ManCard/TempCard_Win.jsp</result>	
+    		<param name="cardtype">2</param>
+		</action>
+		
+    	<!-- ==============================   正式卡管理  ================================  -->
+    	<!-- 查询房间列表操作 -->
+		<action name="findManRoomListByJq" class="manCardAction" method="findManRoomListByJq"/>
+    	<!-- 正式卡延期操作 -->
+		<action name="delayManCardByJq" class="manCardAction" method="delayManCardByJq"/>
+		<!-- 跳转到[正式卡]列表页面 -->
+    	<action name="regularcardlist" class="manCardAction" method="toForwardListPage">
+    		<result name="success">/Ibmc/ManCard/RegularCard_List.jsp</result>	
+    		<param name="cardtype">3</param>
+		</action>
+		
+		<!-- 跳转到[正式卡]管理页面 -->
+    	<action name="regularcardwin" class="manCardAction" method="listManCard">
+    		<result name="success">/Ibmc/ManCard/RegularCard_Win.jsp</result>	
+    		<param name="cardtype">3</param>
+		</action>
+		
+		<!-- ==============================  刷卡记录查询  ================================  -->
+		<!-- 刷卡记录查询列表 -->
+		<action name="findManCardRecordListByJq" class="manCardAction" method="findManCardRecordListByJq"/>
+		<!-- 跳转刷卡记录查询页面 -->
+    	<action name="toforwardlistpage_record" class="manCardAction" method="toForwardListPage">
+    		<result name="success">/Ibmc/ManCard/CardRecord_List.jsp</result>	
+		</action>
+		<!-- 跳转刷卡记录详细页面 -->
+    	<action name="setmancardrecorddesc" class="manCardAction" method="setManCardRecordDesc">
+    		<result name="success">/Ibmc/ManCard/CardRecord_Win.jsp</result>	
+		</action>
+		
+		<!-- ==============================  刷卡记录短信通知  ================================  -->
+		<!-- 刷卡记录查询列表 -->
+		<action name="findManCardLinkNoticeMessListByJq" class="manCardAction" method="findManCardLinkNoticeMessListByJq"/>
+		<!-- 刷卡短信记录查询列表 -->
+		<action name="findManCardNoticeMessListByJq" class="manCardAction" method="findManCardNoticeMessListByJq"/>
+		<!-- 短信通知引入门卡列表 -->
+		<action name="findManCardListInMessImpByCommIdByJq" class="manCardAction" method="findManCardListInMessImpByCommIdByJq"/>
+		<!-- 跳转刷卡记录查询页面 -->
+    	<action name="toforwardcardmesslistpage" class="manCardAction" method="toForwardCardMessListPage">
+    		<result name="success">/Ibmc/ManCard/CardMess_List.jsp</result>	
+		</action>
+		<!-- 跳转刷卡记录详细页面 -->
+    	<action name="setmancardlinknoticemess" class="manCardAction" method="setManCardLinkNoticeMess">
+    		<result name="success">/Ibmc/ManCard/CardMess_Win.jsp</result>	
+		</action>
+		<!-- 跳转短信通知引入门卡页面 -->
+    	<action name="setmancardinmessimp" class="manCardAction" method="setManCardInMessImp">
+    		<result name="success">/Ibmc/ManCard/CardMess_Set.jsp</result>	
+		</action>
+		<!-- 保存短信通知引入门卡页面 -->
+    	<action name="savemancardmessimp" class="manCardAction" method="saveManCardMessImp"></action>
+    	
+		<!-- 手动发送短信 -->
+    	<action name="sentsmsbymanu" class="manCardAction" method="sentSmsByManu"></action>
+		
+	</package>
+</struts>
+

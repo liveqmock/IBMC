@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+    "http://struts.apache.org/dtds/struts-2.0.dtd">
+<!-- 
+	@description 权限管理>>权限设置
+    @author 郑学仕
+    @date 2014-11-14
+ -->
+ <struts>
+ <package name="BaseRoleUser" extends="nsoft-ic" namespace="/Base/RoleUser">
+         <!-- 角色管理(菜单链接跳转列表) -->
+    	<action name="toforwordroleuser" class="baseRoleUserAction" method="toForwordRoleUser">
+    		<result  name="success">/Base/RoleUser/URole_List.jsp</result>
+    	</action>
+    	
+ 		<!-- 人员[列表] -->
+    	<action name="listBaseRoleUserByJq" class="baseRoleUserAction" method="listBaseRoleUserByJq"></action>
+    	
+    	<!-- 删除 -->
+    	<action name="deleteBaseRoleUserByJq" class="baseRoleUserAction" method="deleteBaseRoleUserByJq"></action>
+    	 <!-- 人员引入[跳转] -->
+    	<action name="setbaseuser" class="baseRoleUserAction" method="setBaseUser">
+    		<result name="success">/Base/RoleUser/User_List.jsp</result>
+    	</action>
+    	<!-- 人员引入[列表] -->
+    	<action name="listBaseUserByJq" class="baseRoleUserAction" method="listBaseUserByJq"></action>
+    	
+    	
+    	<!-- 引入[保存] -->
+    	<action name="savebaseroleuser" class="baseRoleUserAction" method="saveBaseRoleUser"></action>
+    	
+    	<!-- 角色设置[跳转] -->
+    	<action name="setbaseroleport" class="baseRoleUserAction" method="setBaseRolePort">
+    		  <result name="success">/Base/RoleUser/URole_Set.jsp</result>
+    	</action>
+    	
+    	<!-- 保存人员对应的角色 -->
+    	<action name="updatebaseroleport" class="baseRoleUserAction" method="updateBaseRolePort"></action>
+ </package>
+ </struts>

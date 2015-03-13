@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+    "http://struts.apache.org/dtds/struts-2.0.dtd">
+<!--
+@description 设备管理_门口机管理表
+@author 
+@date 2015-01-20
+-->
+<struts>
+    <package name="ManDoor" extends="nsoft-ic" namespace="/Man/Door">
+    	<!-- ==========================    JQuery相关     ============================ -->
+		<!-- 门口机登记[列表] -->
+    	<action name="findManDoorListByJq" class="manDoorAction" method="findManDoorListByJq"></action>
+		<!-- 门口机登记[删除] -->
+    	<action name="delManDoorByJq" class="manDoorAction" method="delManDoorByJq"></action>
+		<!-- 门口机登记[列表] -->
+    	<action name="findManDoorHouseLinkListByJq" class="manDoorAction" method="findManDoorHouseLinkListByJq"></action>
+		<!-- 取消管理门口机[列表] -->
+    	<action name="findManHouseLinkDoorListByJq" class="manDoorAction" method="findManHouseLinkDoorListByJq"></action>
+		<!-- 查询设备状态（直接查询webservice数据，在oracle中不做记录） -->
+    	<action name="findManDoorStatusByHouseId" class="manDoorAction" method="findManDoorStatusByHouseId"></action>
+    	<action name="findManDoorStatusByEquipId" class="manDoorAction" method="findManDoorStatusByEquipId"></action>
+    	<!-- 设备命令操作（直接调用webservice中的方法） -->
+    	<action name="setManDoorCommandByJq" class="manDoorAction" method="setManDoorCommandByJq"></action>
+    	<!-- 查询统计门口机关联房产的个数 -->
+    	<action name="findDoorLinkHouseCountByJq" class="manDoorAction" method="findDoorLinkHouseCountByJq"></action>
+    	
+		
+    	<!-- ==============================   门口机[登记]  ================================  -->
+		<!-- 跳转到[门口机登记]列表页面 -->
+    	<action name="toforwardlistpage" class="manDoorAction" method="toForwardListPage">
+    		<result name="success">/Ibmc/ManDoor/Door_List.jsp</result>
+		</action>
+		<!-- 跳转到[门口机登记]新增,修改页面 -->
+    	<action name="setmandoor" class="manDoorAction" method="setManDoor">
+    		<result name="success">/Ibmc/ManDoor/Door_Set1.jsp</result>
+		</action>
+		<!-- 保存[门口机登记]新增,修改 -->
+    	<action name="savemandoor" class="manDoorAction" method="saveManDoor">
+    		<result name="input">/Ibmc/ManDoor/Door_Set1.jsp</result>
+		</action>
+		<!-- 跳转到[门口机登记]导入页面 -->
+    	<action name="setmandoorimp" class="manDoorAction" method="setManDoorImp">
+    		<result name="success">/Ibmc/ManDoor/Door_Set2.jsp</result>
+		</action>
+		<!-- 门口机登记[验证数据有效性] -->
+    	<action name="savemandoortemp" class="manDoorAction" method="saveManDoorTemp">
+    		<param name="savePath">/Ibmc/ManDoor/Upload/</param>
+		</action>
+		<!-- 保存[门口机登记]Excel导出 -->
+    	<action name="savemandoorexpexcel" class="manDoorAction" method="saveManDoorExpExcel"></action>
+		
+		<!-- ==============================   门口机[管理]  ================================  -->
+		<!-- 跳转到[门口机管理]列表页面 -->
+    	<action name="toforwardlistpage_man" class="manDoorAction" method="toForwardListPage">
+    		<result name="success">/Ibmc/ManDoor/DoorMan_List.jsp</result>
+		</action>
+		<!-- 跳转到[门口机管理]关联设置页面 -->
+    	<action name="setmandoorlinkhouse" class="manDoorAction" method="setManDoorLinkHouse">
+    		<result name="success">/Ibmc/ManDoor/DoorMan_Set1.jsp</result>
+		</action>
+		<!-- 保存[门口机管理]关联设置页面 -->
+    	<action name="savemandoorlinkhouse" class="manDoorAction" method="saveManDoorLinkHouse"></action>
+		<!-- 跳转到[门口机管理]关联设置页面 -->
+    	<action name="setmandoorcancellinkhouse" class="manDoorAction" method="setManDoorCancelLinkHouse">
+    		<result name="success">/Ibmc/ManDoor/DoorMan_Set2.jsp</result>
+		</action>
+		<!-- 保存[门口机管理]关联设置页面 -->
+    	<action name="delmandoorhouse" class="manDoorAction" method="delManDoorHouse"></action>
+		
+	</package>
+</struts>
+

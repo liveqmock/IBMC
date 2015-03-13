@@ -1,0 +1,191 @@
+/**
+ * 功能描述 选项卡Jquery自定义插件
+ * @author 许东雄
+ * @date:2014-09-29
+ * 参数：	tabId 选项卡 ID
+ conId 内容	ID
+ **/
+(function($){
+    $.fn.extend({
+        //插件名称
+        tabs:function(options){
+            //参数和默认值
+            var defaults = {
+                tabId : "",	//选项卡ID
+                conId : "" //内容DIV ID
+            };
+            var options = $.extend(defaults,options);
+            var o = options;
+            num = 1;  //隐藏卡中相对于导航新增的li个数
+            $("a",$(this)).bind("click",function(){
+                jQuery.fn.addTab($(this),o.tabId,o.conId);
+            });
+            //绑定选项卡点击事件
+            $("span.tab",o.tabId).live("click",function(){
+                var Index = $("li",o.tabId).index($(this).parent());//获取当前关闭选项卡下表
+                var objId = $(this).attr("id") + "_content";
+                $("iframe",o.conId).hide();
+                $("li",o.tabId).removeClass("current");
+                //删除非当前选中的tab删除按钮
+                $("li",o.tabId).not(".current").find('span:eq(1)').removeClass("remove");
+                //删除隐藏卡中当前Tab定位
+                $("li",$('#collect')).removeClass("currentTab");
+                $("#" + objId).show();
+                $(this).parent().addClass("current");
+                //增加当前选中的tab删除按钮
+                $(this).next().addClass('remove');
+                //显示隐藏卡中当前Tab定位
+                $("li:eq("+(Index+num)+")",$('#collect')).addClass("currentTab");
+                return false;
+
+            });
+
+            //绑定关闭选项卡事件
+            $('span.remove',o.tabId).live('click', function() {
+                var Index = $("li",o.tabId).index($(this).parent());//获取当前关闭选项卡下表
+                var tabId = $(this).parent().find(".tab").attr("id");
+                //移除隐藏卡中相应的li
+                $("li:eq("+(Index+num)+")",$('#collect')).remove();
+                $("#" + tabId +"_content").remove();
+                $(this).parent().remove();
+                if($("li.current",o.tabId).length == 0 && $("li",o.tabId).length>0){
+                    if(Index>0)Index = Index-1;
+                    var objTab = $("li:eq("+Index+")",o.tabId);
+                    objTab.addClass("current");
+                    objTab.find('span:eq(1)').addClass('remove');
+                    //显示隐藏卡中当前Tab定位
+                    $("li:eq("+(Index+num)+")",$('#collect')).addClass("currentTab");
+
+                    var objTabId = $(objTab).find("span.tab").attr("id");
+                    $("#" + objTabId + "_content").show();
+                }
+                return false;
+
+            });
+
+            //绑定隐藏卡点击事件
+            $('span.collectTab',$("#collect")).live('click',function(){
+                var Index = $("li",$('#collect')).index($(this).parent());
+                //当前在隐藏卡中被选中的选项卡
+                var objTab = $("li:eq("+(Index-num)+")",o.tabId);
+                //当前选中的选项卡
+                var currentTab = $('li',o.tabId).filter(".current");
+                currentTab.removeClass("current");
+                currentTab.find('span:eq(1)').removeClass('remove');
+                //删除隐藏卡中当前Tab定位
+                $("li",$('#collect')).removeClass("currentTab");
+                objTab.addClass("current");
+                objTab.find('span:eq(1)').addClass('remove');
+                //显示隐藏卡中当前Tab定位
+                $(this).parent().addClass("currentTab");
+                $("iframe",o.conId).hide();
+
+                var collectTabId = $(this).attr("id");
+                $("#" + collectTabId + "_content").show();
+                $(".downMenu").hide();
+                return false;
+            });
+
+            //删除隐藏卡中的li
+            $('span.cancel',$("#collect")).live('click', function() {
+                var Index = $("li",$('#collect')).index($(this).parent());
+                $(this).parent().remove();
+                $("li:eq("+(Index-num)+")",o.tabId).remove();
+                //删除隐藏卡中当前Tab定位
+                // $("li",$('#collect')).removeClass("currentTab");
+                if($("li.currentTab",$("#collect")).length == 0 && $("li",$("#collect")).length>0){
+                    if(Index>0)Index = Index-1;
+                    //导航中选项卡
+                    var objTab = $("li:eq("+(Index-num)+")",o.tabId);
+                    objTab.addClass("current");
+                    objTab.find('span:eq(1)').addClass('remove');
+                    $("iframe",o.conId).hide();
+                    var objTabId = $(objTab).find("span.tab").attr("id");
+                    $("#" + objTabId + "_content").show();
+                    //显示隐藏卡中当前Tab定位
+                    var curTab = $("li:eq("+Index+")",$("#collect"));
+                    curTab.addClass("currentTab");
+
+                }
+                $(".downMenu").hide();
+                return false;
+            });
+            //隐藏卡中全部关闭
+            $("#close").live('click',function(){
+                $("li",o.tabId).not("li:first").remove();
+                $("li",$("#collect")).not("li:lt(2)").remove();
+                $("li:first span.tab",o.tabId).trigger("click");
+            });
+
+        }
+    });
+})(jQuery);
+jQuery.fn.addTab=function(link,objTab,objCon){
+    var maxTabNum = 20;
+    if($("li",objTab).length>=maxTabNum){
+        if($("#" + $(link).attr("rel")).length == 0){
+            var firstTab = $("li:eq(1)",objTab).find('span').html();
+
+            $.jBox.confirm("选项卡打开超过"+maxTabNum+"个，将会关闭[<span class='fontcolor_red'>"+firstTab+"</span>]选项卡，是否继续！", "提示", function (v, h, f) {
+                if (v == 'ok'){
+                    $("li:eq(1)",objTab).remove();
+                    addNewTab();
+                    $("li:eq(2)",$("#collect")).remove();
+                    addDownMenu();
+                }
+                else if (v == 'cancel'){
+                    isCanContinue = false ;
+                }
+                return true;
+            });
+        }else{
+            redirectTab();
+            return;
+        }
+    }else{
+        if($(link).attr("src")==undefined) return;
+        //定位已打开的选项卡
+        if($("#" + $(link).attr("rel")).length != 0){
+            redirectTab();
+            return;
+        }
+        addNewTab();
+        addDownMenu();
+    }
+
+    function redirectTab(){
+        var objId = $(link).attr("rel") + "_content";
+        $("iframe",objCon).hide();
+        $("li",objTab).removeClass("current");
+        //删除非当前选中的tab删除按钮
+        $("li",objTab).not(".current").find('span:eq(1)').removeClass("remove");
+        $("#" + objId).show();
+        $("#"+$(link).attr("rel")).parent().addClass("current");
+        $("#"+$(link).attr("rel")).parent().find('span:eq(1)').addClass('remove');
+    }
+
+
+
+
+    function addNewTab(){
+        var title=$(link).html();
+        if($(link).html().length>4){
+            title = $(link).html().substr(0,4)+"...";
+        }
+        $("li",objTab).removeClass("current");
+        $("iframe",objCon).hide();
+        objTab.append("<li class='current'><span class='tab' id='" +$(link).attr("rel") + "' title='"+$(link).html()+"'>" + title + "</span><span class='remove'>&nbsp;</span></li>");
+        objCon.append("<iframe name=\"iframe\" id='" +$(link).attr("rel") + "_content' src=\""+$(link).attr("src")+"\" frameborder=\"0\" scrolling=\"no\" height=\"100%\" width=\"100%\"></iframe> ");
+        $("#" + $(link).attr("rel") + "_content").show();
+        $('li',objTab).not(".current").find('span:eq(1)').removeClass("remove");
+    }
+    //加载至隐藏卡下拉菜单中
+    function addDownMenu(){
+        var title=$(link).html();
+        if($(link).html().length>4){
+            title = $(link).html().substr(0,4)+"...";
+        }
+        $("li",$("#collect")).removeClass("currentTab");
+        $('#collect').append("<li  class='currentTab'><span  class='collectTab' id='" +$(link).attr("rel") + "' title='"+$(link).html()+"'>"+title+"</span><span class='cancel'>&nbsp;</span></li>");
+    }
+}

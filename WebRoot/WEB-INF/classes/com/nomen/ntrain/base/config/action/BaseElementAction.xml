@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+    "http://struts.apache.org/dtds/struts-2.0.dtd">
+<!-- 
+	@description 系统管理_全局按钮表
+    @author 郑学仕
+    @date 2015-01-19
+ -->
+ <struts>
+    <package name="BaseElement" extends="nsoft-ic" namespace="/Base/Menu">
+    
+        <action name="toforwardelement" class="baseElementAction" method="toForwardElement">
+    		<result name="success">/Base/Menu/Ele_List.jsp</result>
+    	</action>
+    
+    	  <!-- 控件按钮列表-->
+    	<action name="listbaseelement" class="baseElementAction" method="listBaseElement"></action>
+    	
+    	<!-- 控件按钮跳转 -->
+    	<action name="setbaseelement" class="baseElementAction" method="setBaseElement">
+    		<result name="success">/Base/Menu/Ele_Set.jsp</result>
+    	</action>
+    	
+       <!-- 保存-->
+    	<action name="savebaseelement" class="baseElementAction" method="saveBaseElement">
+    		<result name="success" >/Base/Menu/Ele_List.jsp</result>
+    	</action>
+    	   	
+       <!--删除-->
+    	<action name="deletebaseelement" class="baseElementAction" method="deleteBaseElement"></action>
+    	
+    </package>
+ </struts>

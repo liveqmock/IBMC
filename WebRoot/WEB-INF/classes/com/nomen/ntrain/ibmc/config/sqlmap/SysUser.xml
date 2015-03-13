@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!--
+@description 系统管理_用户表
+@author ljl
+@date 2015-1-18
+-->
+<sqlMap namespace="SysUser">
+	<typeAlias alias="sysUserBean" type="com.nomen.ntrain.ibmc.bean.SysUserBean"/>
+
+	<!-- 查找系统管理_用户表列表信息-->
+	<select id="findSysUserList" resultClass="sysUserBean" parameterClass="map">
+	
+		select 
+			u.id,u.username,u.telephone,u.phone,
+			u.userpsd,u.userorder,u.remark,u.levsign,
+			to_char(u.createdate,'yyyy-mm-dd') createdate,
+			to_char(u.updatedate,'yyyy-mm-dd') updatedate,
+			(select r.rolename from base_role r where r.id = ru.roleids)rolename
+		from sys_user u,base_role_user ru
+		 where 1=1
+		 and u.id =  ru.userid
+		 
+		<isNotEmpty prepend="" property="roleid">
+			and ru.roleids =#roleid#
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="keyword">
+			$fields$ like '%'||#keyword#||'%'
+		</isNotEmpty>
+		<isNotEmpty prepend="" property="areaid">
+		  and exists (
+          select 1
+          from sys_user_area a
+          where a.areaid in (
+             select c.id from sys_community c start with c.id=#areaid# connect by prior c.id = c.parentid
+          ) and a.userid = u.id 
+         )
+
+		</isNotEmpty>
+	</select>
+
+	<!--查找系统管理_用户表信息 -->
+	<select id="findSysUserBeanById" resultClass="sysUserBean" parameterClass="string">
+		select 
+			u.id,u.username,u.telephone,u.phone,
+			u.userpsd,u.userorder,u.remark,u.levsign,
+			to_char(u.createdate,'yyyy-mm-dd') createdate,
+			to_char(u.updatedate,'yyyy-mm-dd') updatedate,
+			ru.roleids roleid
+		from sys_user u,base_role_user ru
+		 where 1=1
+		 and id= #value#
+		 and  u.id =  ru.userid
+	</select>
+
+	<!-- 添加系统管理_用户表信息-->
+	<insert id="insertSysUser" parameterClass="sysUserBean">
+		<selectKey resultClass="java.lang.String" keyProperty="id">
+			select seq_sys_user.nextval as id from dual
+		</selectKey>
+		insert into sys_user
+		  (id,username,telephone,phone,userpsd,userorder,remark,levsign,createdate,updatedate)
+		values
+		  (#id#,#username#,#telephone#,#phone#,#userpsd#,#userorder#,#remark#,#levsign#,sysdate,sysdate)
+	</insert> 
+
+	<!-- 更新系统管理_用户表信息 -->
+	<update id="updateSysUser" parameterClass="sysUserBean">
+		update sys_user 
+		set  id = #id#,
+		     updatedate = sysdate
+		<isNotEmpty prepend="," property="username">
+			username = #username#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="telephone">
+			telephone = #telephone#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="phone">
+			phone = #phone#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="userpsd">
+			userpsd = #userpsd#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="userorder">
+			userorder = #userorder#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="remark">
+			remark = #remark#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="levsign">
+			levsign = #levsign#
+		</isNotEmpty>
+		where  id = #id#
+	</update>
+
+	<!-- 删除系统管理_用户表信息-->
+	<delete id="deleteSysUserById" parameterClass="string">
+		delete from sys_user where id in ($id$)
+	</delete>
+ 
+ 	<!-- 查询下一个排序号 -->
+ 	<select id="findSysUserOrder" parameterClass="map" resultClass="string" >
+		select 
+			nvl(count(u.userorder),0)+1 
+		from sys_user u, base_role_user ru 
+	    where ru.roleids=#roleid#
+	</select>
+</sqlMap>

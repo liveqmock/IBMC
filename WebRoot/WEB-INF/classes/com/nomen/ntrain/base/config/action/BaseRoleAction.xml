@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+    "http://struts.apache.org/dtds/struts-2.0.dtd">
+<!-- 
+	@description 权限管理>>角色定义
+    @author 郑学仕
+    @date 2014-11-14
+ -->
+ <struts>
+    <package name="BaseRole" extends="nsoft-ic" namespace="/Base/Role">
+        <!-- ==============================JQUERY 相关=============================== -->
+    	<!-- 验证查询角色被引入的数量 -->
+    	<action name="findBaseRoleImpCountByJq" class="baseRoleAction" method="findBaseRoleImpCountByJq"></action>
+    	<!-- ==============================角色管理=============================== -->
+        <!-- 角色管理(菜单链接跳转列表) -->
+    	<action name="toforwordrole" class="baseRoleAction" method="toForwordRole">
+    		<result  name="success">/Base/Role/Role_List.jsp</result>
+    	</action>
+    	
+    	<!-- 角色管理(列表) -->
+    	<action name="listBaseRoleByJq" class="baseRoleAction" method="listBaseRoleByJq"></action>
+    	
+    	<!-- 新增/修改 跳转 -->
+    	<action name="setbaserole" class="baseRoleAction" method="setBaseRole">
+    		<result name="success" >/Base/Role/Role_Set.jsp</result>
+    	</action>
+    	
+    		<!--  菜单角色列表 -->
+    	<action name="listBaseRoleMenuTreeByJq" class="baseRoleAction" method="listBaseRoleMenuTreeByJq"></action>
+    	
+    	
+    	
+    	<!-- 保存 -->
+    	<action name="savebaserole" class="baseRoleAction" method="addBaseRole">
+    		<result name="success" >/Base/Role/Role_List.jsp</result>
+    	</action>
+    	
+    	 <!-- 删除 -->	
+	    <action name="deleteBaseRoleByJq" class="baseRoleAction" method="deleteBaseRoleByJq"></action>
+    </package>
+</struts>

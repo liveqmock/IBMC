@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+    "http://struts.apache.org/dtds/struts-2.0.dtd">
+<!--
+@description 系统管理_社区/房产表
+@author ljl
+@date 2015-01-20
+-->
+<struts>
+    <package name="SysComm" extends="nsoft-ic" namespace="/Sys/Comm">
+    	<!-- ==========================    JQuery相关     ============================ -->
+		<!-- 权限人员所能管理的区域列表(用于构建树状)该方法为异步加载功能  -->
+    	<action name="listRegionByJq" class="sysCommunityAction" method="listRegionByJq"></action>
+		<!-- 系统管理 社区管理(村)[列表]-->
+    	<action name="listVillageByJq" class="sysCommunityAction" method="listVillageByJq"></action>
+		<!-- 删除村 -->
+    	<action name="deleteVillageByJq" class="sysCommunityAction" method="deleteVillageByJq"></action>
+		
+    	<!-- ==============================   社区管理  ================================  -->
+		<!-- 跳转到[社区管理]列表页面 -->
+    	<action name="tosyscommunity_vill" class="sysCommunityAction" method="toForwardListPage">
+    		<result name="success">/Ibmc/System/Community_List.jsp</result>	
+		</action>
+		
+		<!-- 跳转到[社区管理]新增页面 -->
+    	<action name="setsyscommunity_vill" class="sysCommunityAction" method="setSysCommunity">
+    		<result name="village">/Ibmc/System/Community_Set.jsp</result>	
+		</action>
+		
+		<!-- 保存 -->
+    	<action name="savesyscommunity" class="sysCommunityAction" method="saveSysCommunity">
+    		<result name="input">/Ibmc/System/Community_Set.jsp</result>
+    	</action>
+		
+	</package>
+</struts>
+

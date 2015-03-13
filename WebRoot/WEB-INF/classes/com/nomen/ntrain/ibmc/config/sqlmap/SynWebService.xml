@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!--
+@description 同步
+@author ljl
+@date 2015-1-23
+-->
+<sqlMap namespace="SynWebService">
+	<typeAlias alias="sysCommunityBean" type="com.nomen.ntrain.ibmc.bean.SysCommunityBean"/>
+
+	<!-- 通过ID查询出其+上级（市、区、村、房产）列表-->
+	<select id="findSysCommParentListByCommId" resultClass="sysCommunityBean" parameterClass="string">
+		SELECT 
+		     *
+		FROM
+		(
+			SELECT 
+				  ID, PARENTID, COMMDETAIL, COMMNAME, OWNERID, 
+				  COMMTYPE, COMMLEV, USESIGN, COMMORDER, REMARK, 
+				  COMMZIP, COMMPATH
+			FROM SYS_COMMUNITY C
+			START WITH C.ID = #value#
+			CONNECT BY PRIOR C.PARENTID = C.ID
+		)
+		ORDER BY COMMLEV
+	</select>
+	
+	<!-- 通过ID查询出其+上级（市、区、村、房产）列表-->
+	<select id="findSysCommChildsListByCommId" resultClass="sysCommunityBean" parameterClass="string">
+		SELECT 
+		     *
+		FROM
+		(
+			SELECT 
+				  ID, PARENTID, COMMDETAIL, COMMNAME, OWNERID, 
+				  COMMTYPE, COMMLEV, USESIGN, COMMORDER, REMARK, 
+				  COMMZIP, COMMPATH
+			FROM SYS_COMMUNITY C
+			START WITH C.ID = #value#
+			CONNECT BY PRIOR C.ID = C.PARENTID
+		)
+		
+		ORDER BY COMMLEV
+	</select>
+	
+	<!-- 通过ID修改其下行状态-->
+	<update id="updateSysCommDownSign" parameterClass="sysCommunityBean">
+		UPDATE SYS_COMMUNITY 
+			SET DOWNDATE = SYSDATE,
+			    DOWNSIGN =#downsign#
+		WHERE ID = #id#
+	</update>
+	
+</sqlMap>

@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!--
+@description 人员_业主/租户表
+@author 
+@date 2015-01-18
+-->
+<sqlMap namespace="ManPeo">
+	<typeAlias alias="manPeoBean" type="com.nomen.ntrain.ibmc.bean.ManPeoBean"/>
+	<!-- 查找人员_业主/租户表列表信息 -->
+	<select id="findManPeoList" resultClass="manPeoBean" parameterClass="map">
+		select 
+			id, ownersign, rentsign, name, sex, to_char(birthday,'yyyy-mm-dd')birthday,
+			nation, idcard, telephone, unitname, address, photopath, remark, 
+			(select username from sys_user u where u.id = optuserid)optusername,
+			to_char(createdate,'yyyy-mm-dd')createdate, to_char(updatedate,'yyyy-mm-dd')updatedate, optuserid 
+		from man_peo
+		where 1=1
+    	<isNotEmpty prepend="and" property="id">
+    		id = #id#
+    	</isNotEmpty>
+    	<isNotEmpty prepend="and" property="ownersign">
+    		ownersign = #ownersign#
+    	</isNotEmpty>
+    	<isNotEmpty prepend="and" property="rentsign">
+    		rentsign = #rentsign#
+    	</isNotEmpty>
+    	<isNotEmpty prepend="and" property="sex">
+    		sex = #sex#
+    	</isNotEmpty>
+    	<isNotEmpty prepend="and" property="idcard">
+    		idcard = #idcard#
+    	</isNotEmpty>
+    	<isNotEmpty prepend="" property="keyword">
+    		<isEqual property="fields" compareValue="name">
+    			and (name like '%'||lower(#keyword#)||'%' or pyszm like '%'||lower(#keyword#)||'%')
+    		</isEqual>
+    		<isNotEqual property="fields" compareValue="name">
+    			and $fields$ like '%'||#keyword#||'%' 
+    		</isNotEqual>
+    	</isNotEmpty>
+        <isNotEmpty property="sortfield">
+        	order by $sortfield$
+    	</isNotEmpty>
+	</select>
+	
+	<!-- 查找人员_业主/租户表信息[通过主键ID/身份证ID] -->
+	<select id="findManPeoBean" resultClass="manPeoBean" parameterClass="map">
+		select 
+			id, ownersign, rentsign, name, sex, to_char(birthday,'yyyy-mm-dd')birthday,
+			nation, idcard, telephone, unitname, address, photopath, remark, 
+			(select username from sys_user u where u.id = optuserid)optusername,
+			to_char(createdate,'yyyy-mm-dd')createdate, to_char(updatedate,'yyyy-mm-dd')updatedate, optuserid 
+		from man_peo
+		where 1=1
+    	<isNotEmpty prepend="and" property="id">
+    		id = #id#
+    	</isNotEmpty>
+    	<isNotEmpty prepend="and" property="idcard">
+    		idcard = #idcard#
+    	</isNotEmpty>
+	</select>
+
+	<!-- 添加人员_业主/租户表信息 -->
+	<insert id="insertManPeoBean" parameterClass="manPeoBean" >
+		<selectKey resultClass="java.lang.String" keyProperty="id">
+			select seq_man_peo.nextval as id from dual
+		</selectKey>
+		insert into man_peo
+		  (
+		  	id, ownersign, rentsign, name, sex, birthday, nation, idcard, telephone, 
+		    unitname, address, photopath, remark, optuserid, createdate, updatedate,
+		    pyszm
+		  )
+		  (
+		  	select #id#, #ownersign#, #rentsign#, #name#, #sex#, to_date(#birthday#,'yyyy-mm-dd'), #nation#, Upper(#idcard#), #telephone#, 
+		  		   #unitname#, #address#, #photopath#, #remark#, #optuserid#, sysdate, sysdate,
+		  		   LOWER(IBMC_HZ_PY.GetHzPYCAP(#name#))
+		    from dual
+		  )
+	</insert> 
+
+	<!-- 更新人员_业主/租户表信息 -->
+	<update id="updateManPeoBean" parameterClass="manPeoBean">
+		update man_peo 
+			set updatedate = sysdate
+		<isNotEmpty prepend="," property="ownersign">
+			ownersign = #ownersign#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="rentsign">
+			rentsign = #rentsign#
+		</isNotEmpty>
+		<isNotNull prepend="," property="name">
+			name = #name#,
+			pyszm = (select  LOWER(IBMC_HZ_PY.GetHzPYCAP(#name#)) from dual)
+		</isNotNull>
+		<isNotEmpty prepend="," property="sex">
+			sex = #sex#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="nation">
+			nation = #nation#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="birthday">
+			birthday = to_date(#birthday#,'yyyy-mm-dd')
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="idcard">
+			idcard = #idcard#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="telephone">
+			telephone = #telephone#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="unitname">
+			unitname = #unitname#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="address">
+			address = #address#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="photopath">
+			photopath = #photopath#
+		</isNotEmpty>
+		<isNotNull prepend="," property="remark">
+			remark = #remark#
+		</isNotNull>
+		where id = #id#
+	</update>
+	
+    <!-- 查询该人员是否已经存在[根据身份证号码查询] -->
+    <select id="findManPeoIsExist" parameterClass="string" resultClass="string">
+    	select nvl(count(1),0) from man_peo 
+    		where idcard = #value#
+    </select>	
+
+	<!-- 删除人员_业主/租户表信息[根据身份证号码] -->
+	<delete id="deleteManPeoByIdCard" parameterClass="string">
+		delete from man_peo where idcard = #value#
+	</delete>
+	
+	<!-- 删除人员_业主/租户表信息[根据主键ID] -->
+	<delete id="deleteManPeo" parameterClass="map">
+		delete from man_peo 
+		where id = #id#
+		<isNotEmpty prepend="and" property="idcard">
+			idcard = #idcard#
+		</isNotEmpty>
+	</delete>
+	
+	<!-- 根据门卡序列号cardno查询租客，业主信息 -->
+    <select id="findManPeoListByCardno" parameterClass="map" resultClass="manPeoBean">
+    	select 
+	       p.id,p.sex,p.name,p.nation,p.idcard,to_char(p.birthday,'yyyy-mm-dd')birthday,p.address,p.photopath,
+	       p.remark,(select s.commname from sys_community s where s.id = c.houseid)housename,p.telephone,
+	       (select s.commname from sys_community s where s.id = c.roomid)roomname
+		from man_peo p,man_card c
+		where c.cardtype = #cardtype#
+		  and (p.id = c.rentid)
+		  and c.cardno = #cardno#
+    </select>
+	
+</sqlMap>

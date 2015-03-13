@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="gbk" ?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+    "http://struts.apache.org/dtds/struts-2.0.dtd">
+<!--
+@description 记录操作数据_用于同webservice同步
+@author ljl
+@date 2015-1-29
+-->
+<struts>
+    <package name="SynDataBean" extends="nsoft-ic" namespace="/Syn/Data">
+
+		<!-- 记录操作数据_用于同webservice同步 列表信息 -->
+    	<action name="listsyndatabean" class="synDataBeanAction" method="listSynDataBean">
+    		<result name="success">/Syn/Data/Syn_Data_List.jsp</result>
+		</action>
+
+		<!-- 记录操作数据_用于同webservice同步 新增、修改页面 -->
+    	<action name="setsyndatabean" class="synDataBeanAction" method="setSynDataBean">
+    		<result name="success">/Syn/Data/Syn_Data_Set.jsp</result>
+		</action>
+
+		<!-- 记录操作数据_用于同webservice同步 新增 -->
+    	<action name="insertsyndatabean" class="synDataBeanAction" method="insertSynDataBean">
+    		<result name="success">/Syn/Data/Syn_Data_List.jsp</result>
+    		<result name="input">/Syn/Data/Syn_Data_Set.jsp</result>
+		</action>
+
+		<!-- 记录操作数据_用于同webservice同步 修改-->
+    	<action name="updatesyndatabean" class="synDataBeanAction" method="updateSynDataBean">
+    		<result name="success">/Syn/Data/Syn_Data_List.jsp</result>
+    		<result name="input">/Syn/Data/Syn_Data_Set.jsp</result>
+		</action>
+
+		<!-- 记录操作数据_用于同webservice同步 删除 -->
+    	<action name="deletesyndatabean" class="synDataBeanAction" method="deleteSynDataBean">
+    		<result name="success">/Syn/Data/Syn_Data_List.jsp</result>
+		</action>
+
+	</package>
+</struts>
+

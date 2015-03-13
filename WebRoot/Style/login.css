@@ -1,0 +1,65 @@
+body{
+	border:none; margin:0px; padding:0px;
+	background:#239cc3 url(../Images/login/bg.jpg) no-repeat top center;
+	height:100%;
+}
+#mainlog{ width:671px; height:500px;margin:0 auto; font-family:"ËÎÌå"; font-size:13px;color:#fff;}
+.log-bg{
+    background:none;
+	position:absolute;
+	width:671px; 
+	height:350px;top: 150px;z-index:-1000px;
+}
+.login{
+	position:absolute; 
+	bottom:75px; 
+	height:210px; 
+	width:450px;
+	left:110px;
+}
+.login .title{ 
+	width:240px; 
+	height:31px; 
+	margin-top:20px; 
+	background:url(../Images/login/log-title.png) no-repeat left top !important;
+    filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(enabled=true, sizingMethod=noscale, src="Images/login/log-title.png");
+    background:none;
+}
+.loginfo{ height:80px; width:100%; margin-top:35px;}
+ul,li{ margin:0px; padding:0px; border:none; list-style:none;}
+li{ line-height:30px; height:30px;}
+li label{
+	 width:80px; 
+	text-align:right; 
+	height:30px; 
+	line-height:30px; 
+	display:block; 
+	float:left;
+}
+.text{
+	width:230px;
+	height:20px;
+	list-style:20px;
+	border:1px solid #ccc;
+}
+.msg{ position:absolute; bottom:15px; left:30px;}
+.btn{
+		width:61px; 
+		height:69px; 
+		background:url(../Images/login/btn.png) no-repeat center; 
+		display:block; 
+		position:absolute; 
+		right:60px; 
+		top:83px; 
+		outline:none; star:expression(this.onFocus=this.blur()); 
+		text-decoration:none;
+}
+/**************pngÍ¸Ã÷********************/
+#mainlog img {
+	azimuth: expression(
+	this.pngSet?this.pngSet=true:(this.nodeName == "IMG" && this.src.toLowerCase().indexOf('.png')>-1?(this.runtimeStyle.backgroundImage = "none",
+	this.runtimeStyle.filter = "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='" + this.src + "', sizingMethod='image')",
+	this.src = "transparent.gif"):(this.origBg = this.origBg? this.origBg :this.currentStyle.backgroundImage.toString().replace('url("','').replace('")',''),
+	this.runtimeStyle.filter = "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='" + this.origBg + "', sizingMethod='crop')",
+	this.runtimeStyle.backgroundImage = "none")),this.pngSet=true);
+}

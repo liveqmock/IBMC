@@ -1,0 +1,11 @@
+使用说明: ------------该功能不稳定，待确认
+	$(".productshow").xslider({//.productshow是要移动对象的外框;
+		unitdisplayed:3,//可视的单位个数   必需项;
+		movelength:1,//要移动的单位个数    必需项;
+		maxlength:null,//可视宽度或高度    默认查找要移动对象外层的宽或高度;
+		scrollobj:null,//要移动的对象     默认查找productshow下的ul;
+		unitlen:null,//移动的单位宽或高度     默认查找li的尺寸;
+		nowlength:null,//移动最长宽或高（要移动对象的宽度或高度）   默认由li个数乘以unitlen所得的积;
+		dir:"H",//水平移动还是垂直移动，默认H为水平移动，传入V或其他字符则表示垂直移动;
+		autoscroll:1000//自动移动间隔时间     默认null不自动移动;
+	});

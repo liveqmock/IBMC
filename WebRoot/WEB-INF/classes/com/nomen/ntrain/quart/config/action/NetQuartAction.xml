@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+    "http://struts.apache.org/dtds/struts-2.0.dtd">
+<!-- 
+	@description 调度器
+    @author 梁桂钊
+    @date 2013-09-16
+ -->
+<struts>
+    <package name="NetQuart" extends="nsoft-ic" namespace="/Net/Quart">
+    	<!-- ==========================     JQuery相关     ============================ -->
+		<!-- 查询[调度器]数据列表 -->
+    	<action name="findNetQuartListByJq" class="netQuartAction" method="findNetQuartListByJq"></action>
+    	<!-- 验证 -->
+    	<action name="checkNetQuartMethodsByJq" class="netQuartAction" method="checkNetQuartMethodsByJq"></action>
+    	<action name="checkNetQuartCronexprByJq" class="netQuartAction" method="checkNetQuartCronexprByJq"></action>   	
+    	<!-- 启用|禁用 -->	
+		<action name="updateNetQuartByJq" class="netQuartAction" method="updateNetQuartByJq"></action>
+		<!-- 删除 -->	
+		<action name="deleteNetQuartByJq" class="netQuartAction" method="deleteNetQuartByJq"></action>
+    	
+    	<!-- ==============================   调度管理  ================================  -->
+		<!-- 跳转到[调度器]列表页面 -->
+    	<action name="toforwardlistpage_quart" class="netQuartAction" method="toForwardListPage">
+    		<result name="success">/Quart/Quart_List.jsp</result>
+		</action>
+    	
+    	<!-- 跳转到[调度器]新增,修改页面  -->
+    	<action name="setnetquart" class="netQuartAction" method="setNetQuart">
+    		<result name="success">/Quart/Quart_Set.jsp</result>
+    	</action>
+    	
+    	<!-- 保存[调度器]新增,修改页面  -->
+		<action name="savenetquart" class="netQuartAction" method="saveNetQuart">
+    		<result name="input">/Quart/Quart_Set.jsp</result>
+    	</action>
+    	
+    </package>
+</struts>

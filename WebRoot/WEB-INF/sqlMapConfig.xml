@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMapConfig PUBLIC "-//ibatis.apache.org//DTD SQL Map Config 2.0//EN"
+    "http://ibatis.apache.org/dtd/sql-map-config-2.dtd">
+<sqlMapConfig>
+    <settings cacheModelsEnabled="true" enhancementEnabled="true" errorTracingEnabled="true" lazyLoadingEnabled="true" useStatementNamespaces="true"/>
+    <typeHandler callback="org.springframework.orm.ibatis.support.BlobByteArrayTypeHandler" javaType="[B" jdbcType="BLOB"/>
+    <typeHandler callback="com.nomen.ntrain.util.LargeStringTypeHandler" javaType="java.lang.String"/>
+
+
+    <!-- 基础管理子系统 -->	
+  	<sqlMap resource="com/nomen/ntrain/base/config/sqlmap/Login.xml"/>
+  	<sqlMap resource="com/nomen/ntrain/base/config/sqlmap/BaseMenu.xml"/>
+   	<sqlMap resource="com/nomen/ntrain/base/config/sqlmap/BaseRole.xml"/>
+   	<sqlMap resource="com/nomen/ntrain/base/config/sqlmap/BaseRoleUser.xml"/>
+   	<sqlMap resource="com/nomen/ntrain/base/config/sqlmap/BaseOptLog.xml"/>
+   	<sqlMap resource="com/nomen/ntrain/base/config/sqlmap/BaseException.xml"/>
+   	<!--全局按钮控件-->
+   	<sqlMap resource="com/nomen/ntrain/base/config/sqlmap/BaseElement.xml"/>
+  	
+    <!-- 门禁系统 -->	
+   	<sqlMap resource="com/nomen/ntrain/ibmc/config/sqlmap/ManPeo.xml"/>
+   	<sqlMap resource="com/nomen/ntrain/ibmc/config/sqlmap/SysCommunity.xml"/>
+   	<sqlMap resource="com/nomen/ntrain/ibmc/config/sqlmap/SysCommunityTemp.xml"/>
+    <sqlMap resource="com/nomen/ntrain/ibmc/config/sqlmap/SysUser.xml"/>
+    <sqlMap resource="com/nomen/ntrain/ibmc/config/sqlmap/SysUserArea.xml"/>
+    <sqlMap resource="com/nomen/ntrain/ibmc/config/sqlmap/SysConfig.xml"/>
+   	<sqlMap resource="com/nomen/ntrain/ibmc/config/sqlmap/ManDoor.xml"/>
+   	<sqlMap resource="com/nomen/ntrain/ibmc/config/sqlmap/ManDoorHouse.xml"/>
+   	<!-- 设备管理-->	
+   <sqlMap resource="com/nomen/ntrain/ibmc/config/sqlmap/ManFactory.xml"/>
+   <sqlMap resource="com/nomen/ntrain/ibmc/config/sqlmap/ManFacConfig.xml"/>
+   <sqlMap resource="com/nomen/ntrain/ibmc/config/sqlmap/ManCard.xml"/>
+   <sqlMap resource="com/nomen/ntrain/ibmc/config/sqlmap/SynWebService.xml"/>
+   <sqlMap resource="com/nomen/ntrain/ibmc/config/sqlmap/SynData.xml"/>
+   <sqlMap resource="com/nomen/ntrain/ibmc/config/sqlmap/ManCardRecord.xml"/>
+   <sqlMap resource="com/nomen/ntrain/ibmc/config/sqlmap/ManCardTracemsg.xml"/>
+   <sqlMap resource="com/nomen/ntrain/ibmc/config/sqlmap/ManCardTracePhone.xml"/>
+   <!-- 调度管理 -->
+   <sqlMap resource="com/nomen/ntrain/quart/config/sqlmap/NetQuart.xml"/>
+   <!-- 短信 -->
+   <sqlMap resource="com/nomen/ntrain/sgsdx/config/sqlmap/SmsItemlist.xml"/>
+  	
+</sqlMapConfig>

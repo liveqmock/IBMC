@@ -1,0 +1,342 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<!--
+@description 门卡管理_门卡库表
+@author ljl
+@date 2015-1-23
+-->
+<sqlMap namespace="ManCard">
+	<typeAlias alias="manCardBean" type="com.nomen.ntrain.ibmc.bean.ManCardBean"/>
+	<!-- 查找门卡管理_门卡库表信息 -->
+	<select id="findManCardBeanById" resultClass="manCardBean" parameterClass="string">
+		select 
+			id,cardtype,cardno,cardmac,houseid,
+			roomid,ownerid,rentid,
+			(select p.name from man_peo p where p.id=c.rentid) rentname,
+			(select p.idcard from man_peo p where p.id=c.rentid) rentidcard,
+			to_char(startdate,'yyyy-mm-dd hh24:mi') startdate,
+			to_char(enddate,'yyyy-mm-dd hh24:mi') enddate,
+			to_char(createdate,'yyyy-mm-dd hh24:mi') createdate,
+			to_char(updatedate,'yyyy-mm-dd hh24:mi') updatedate
+		from man_card c
+		where id = #id#
+		and   deletesign =0 
+	</select>
+
+	<!-- 查找门卡管理_门卡库表列表信息 -->
+	<select id="findManCardList" resultClass="manCardBean" parameterClass="map">
+		select 
+			id,cardtype,cardno,cardmac,houseid,ownerid,
+			(select sc.commname from sys_community sc where sc.id = c.roomid) roomid,
+			(select p.name from man_peo p where p.id = c.rentid) rentid,
+			to_char(startdate,'yyyy-mm-dd hh24:mi') startdate,
+			to_char(enddate,'yyyy-mm-dd hh24:mi') enddate,
+			to_char(createdate,'yyyy-mm-dd hh24:mi') createdate,
+			to_char(updatedate,'yyyy-mm-dd hh24:mi') updatedate,
+			(select s.username from  sys_user s where s.id = c.operuserid) operusername
+		from man_card  c
+		where 1=1
+		and   deletesign =0 
+		<isNotEmpty prepend="and" property="houseid">
+			houseid = #houseid#
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="cardtype">
+			cardtype = #cardtype#
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="showsign">
+			<![CDATA[
+			enddate <= add_months(sysdate, 3)
+			]]>  
+		</isNotEmpty>
+		<isNotEmpty prepend="" property="keyword">
+			<isEqual property="fields" compareValue="cardmac">
+				and cardmac like '%'||#keyword#||'%'
+			</isEqual>
+			<isEqual property="fields" compareValue="cardno">
+				and cardno like '%'||#keyword#||'%'
+			</isEqual>
+			<isEqual property="fields" compareValue="rentname">
+				and exists(
+					select 1 from man_peo p where p.name like '%'||#keyword#||'%' and p.id=c.rentid
+				)
+			</isEqual>
+			<isEqual property="fields" compareValue="ownername">
+				and exists(
+					select 1 from man_peo p where p.name like '%'||#keyword#||'%' and p.id=c.ownerid
+				)
+			</isEqual>
+		</isNotEmpty>
+		<isNotEmpty prepend="" property="sortfield">
+			order by $sortfield$
+		</isNotEmpty>
+	</select>
+
+	<!-- 添加门卡管理_门卡库表信息 -->
+	<insert id="insertManCardBean" parameterClass="manCardBean" >
+		<selectKey resultClass="java.lang.String" keyProperty="id">
+			select seq_man_card.nextval as id from dual
+		</selectKey>
+		insert into man_card
+		  (id,cardtype,cardno,cardmac,houseid,roomid,ownerid,rentid,startdate,enddate,createdate,updatedate,operuserid)
+		values
+		  (#id#,#cardtype#,#cardno#,#cardmac#,#houseid#,#roomid#,#ownerid#,#rentid#,to_date(#startdate#,'yyyy-mm-dd'),to_date(#enddate#,'yyyy-mm-dd'),sysdate,null,#operuserid#)
+	</insert> 
+
+	<!-- 更新门卡管理_门卡库表信息 -->
+	<update id="updateManCardBean" parameterClass="manCardBean">
+		update man_card 
+		set  id = #id#,
+			 updatedate = sysdate,
+			 operuserid = #operuserid#
+		<isNotEmpty prepend="," property="cardtype">
+			cardtype = #cardtype#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="cardno">
+			cardno = #cardno#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="cardmac">
+			cardmac = #cardmac#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="houseid">
+			houseid = #houseid#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="roomid">
+			roomid = #roomid#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="ownerid">
+			ownerid = #ownerid#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="rentid">
+			rentid = #rentid#
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="startdate">
+			startdate = to_date(#startdate#,'yyyy-mm-dd')
+		</isNotEmpty>
+		<isNotEmpty prepend="," property="enddate">
+			enddate = to_date(#enddate#,'yyyy-mm-dd')
+		</isNotEmpty>
+		where  id = #id#
+	</update>
+	
+	<!-- 更新正式卡有效期限[] -->
+	<update id="updateManCardBeanByCardidStr" parameterClass="manCardBean">
+		update man_card 
+		set updatedate = sysdate,
+			enddate = add_months(enddate, 12)
+		where id in ($id$)
+	</update>
+	
+	<!-- 删除门卡管理_门卡库表信息[虚拟] -->
+	<update id="updateManCardDelSignById" parameterClass="string">
+		update man_card set deletesign=1 where id=#value#
+	</update>
+
+	<!--删除村/房屋/房间对应的门卡[虚拟] -->
+	<update id="updateManCardDelSignByCommId" parameterClass="string">
+		update man_card set deletesign=1 
+		where 1=1 
+		and (
+				houseid in(select id from sys_community where (id=#value# or commpath like '%/'||#value#||'/%'))
+				or
+				roomid in(select id from sys_community where (id=#value# or commpath like '%/'||#value#||'/%'))
+		    )
+	</update>
+
+	<!-- 通过门卡(序列号)查询门卡类型(业主卡/正式卡/临时卡) -->
+	<select id="findManCardByCardNo" resultClass="manCardBean" parameterClass="string">
+		select 
+			id,cardtype,cardno,cardmac,houseid,
+			roomid,ownerid,rentid,
+			to_char(startdate,'yyyy-mm-dd hh24:mi') startdate,
+			to_char(enddate,'yyyy-mm-dd hh24:mi') enddate,
+			to_char(createdate,'yyyy-mm-dd hh24:mi') createdate,
+			to_char(updatedate,'yyyy-mm-dd hh24:mi') updatedate
+		from man_card c
+		where cardno = #value#
+		and deletesign = 0
+	</select>
+	
+	<!-- 重置门卡(临时卡)-->
+	<update id="updateManCardValidDate" parameterClass="manCardBean">
+		update man_card 
+		set  id = #id#,
+			 updatedate = sysdate,
+			 operuserid = #operuserid#,
+			 startdate = null,
+			 enddate = null
+		where  id = #id#
+	</update>
+
+	<!-- 通过主记录ID查询 其webservice对应的门卡ID -->
+	<select id="findManCardUnLockId" resultClass="string" parameterClass="string">
+		select 
+			unlockid
+		from man_card c
+		where id = #value#
+	</select>
+	
+	
+	<!-- 更新webservice返回的ID至 unlockid-->
+	<update id="updateManCardUnLockId" parameterClass="manCardBean">
+		update man_card 
+		set  id = #id#,
+			 unlockid=#unlockid#,
+			 downdate=sysdate
+		where  id = #id#
+	</update>
+	
+	<!-- 查找房产下所有的门卡列表(包括状态为已删除的记录) -->
+	<select id="findManCardListByHouseId" resultClass="manCardBean" parameterClass="string">
+		select 
+			*
+		from man_card c
+		where houseid = #value#
+	</select>
+	
+	<!-- 查找省/市/区/村/房产/房间下的门卡  -->
+	<select id="findManCardListByCommId" resultClass="manCardBean" parameterClass="string">
+		select *
+		  from man_card c
+		where 1=1
+		and (
+				houseid in(select id from sys_community where (id=#value# or commpath like '%/'||#value#||'/%'))
+				or
+				roomid in(select id from sys_community where (id=#value# or commpath like '%/'||#value#||'/%'))
+		    )
+
+	</select>
+	
+	<!-- 删除门卡数据[真实] -->
+	<delete id="deleteManCardByCardId" parameterClass="string">
+		delete from man_card where  id = #id#
+	</delete>
+	
+	<!-- 删除[省/市/区/村/房产/房间ID]门卡数据[真实] -->
+	<delete id="deleteManCardByCommId" parameterClass="string">
+		delete from man_card c
+		where 1=1
+		and (
+				houseid in(select id from sys_community where (id=#value# or commpath like '%/'||#value#||'/%'))
+				or
+				roomid in(select id from sys_community where (id=#value# or commpath like '%/'||#value#||'/%'))
+		    )
+	</delete>
+	
+	<!-- 查询门卡刷卡发送短信记录 -->
+	<select id="findManCardLinkNoticeMessList" resultClass="manCardBean" parameterClass="map">
+		select 
+			c.id,c.cardtype,c.cardno,p.traceid,
+			(select s.commname from sys_community s where s.id = c.houseid)housename,
+			(select s.commname from sys_community s where s.id = c.roomid)roomname,
+			(select p.name from man_peo p where p.id = c.rentid)rentname,
+			(select p.name from man_peo p where p.id = c.ownerid)ownername,
+			c.houseid,c.roomid,c.rentid,
+			c.ownerid,p.phone
+		from
+			man_card c,
+			man_card_tracephone p
+		where c.id = p.cardid
+		<isNotEmpty prepend="and" property="commpath">
+			  c.houseid in(
+							select id from sys_community 
+							where commlev=4 
+							and (commpath like #commpath#||'/%')
+					   )
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="startdate">
+			  exists (select 1 from man_card_tracemsg t where t.traceid = p.traceid and t.touchdate >= to_date(#startdate#,'yyyy-mm-dd'))
+		</isNotEmpty>
+		<isNotEmpty prepend="and" property="enddate">
+			<![CDATA[
+			  exists (select 1 from man_card_tracemsg t where t.traceid = p.traceid and t.touchdate <= to_date(#enddate#,'yyyy-mm-dd'))
+			]]>  
+		</isNotEmpty>
+		<isNotEmpty prepend="" property="keyword">
+			<isEqual property="fields" compareValue="phone">
+				and phone like '%'||#keyword#||'%'
+			</isEqual>
+			<isEqual property="fields" compareValue="rentname">
+				and exists(
+					select 1 from man_peo p where p.name like '%'||#keyword#||'%' and p.id=c.rentid
+				)
+			</isEqual>
+			<isEqual property="fields" compareValue="ownername">
+				and exists(
+					select 1 from man_peo p where p.name like '%'||#keyword#||'%' and p.id=c.ownerid
+				)
+			</isEqual>
+			<isEqual property="fields" compareValue="rentidcard">
+				and exists(
+					select 1 from man_peo p where p.idcard like '%'||#keyword#||'%' and p.id=c.ownerid
+				)
+			</isEqual>
+			<isEqual property="fields" compareValue="owneridcard">
+				and exists(
+					select 1 from man_peo p where p.idcard like '%'||#keyword#||'%' and p.id=c.rentid
+				)
+			</isEqual>
+		</isNotEmpty>
+		<isNotEmpty prepend="" property="sortfield">
+			order by $sortfield$
+		</isNotEmpty>
+	</select>
+	
+	<!-- 短信通知管理中引入门卡列表 -->
+	<select id="findManCardListInMessImpByCommId" resultClass="manCardBean" parameterClass="map">
+		select 
+			id,cardtype,cardno,cardmac,houseid,ownerid,
+			(select sc.commname from sys_community sc where sc.id = c.houseid) housename,
+			(select sc.commname from sys_community sc where sc.id = c.roomid) roomname,
+			(select p.name from man_peo p where p.id = ownerid) ownername,
+			(select p.name from man_peo p where p.id = c.rentid) rentname,
+			to_char(startdate,'yyyy-mm-dd hh24:mi') startdate,
+			to_char(enddate,'yyyy-mm-dd hh24:mi') enddate,
+			to_char(createdate,'yyyy-mm-dd hh24:mi') createdate,
+			to_char(updatedate,'yyyy-mm-dd hh24:mi') updatedate,
+			(select s.username from  sys_user s where s.id = c.operuserid) operusername
+		from man_card  c
+		where 1=1
+		and   deletesign =0 
+		<isNotEmpty prepend="and" property="commpath">
+			exists (select 1 from sys_community s where s.commlev = 4 and s.id = c.houseid and s.commpath like #commpath#||'/%')
+		</isNotEmpty>
+		<isEmpty prepend="and" property="commpath">
+			exists (select 1 from sys_community c 
+					where c.commlev = 4 
+					and c.id = c.houseid
+					start with c.id in(
+						select a.areaid from sys_user_area a 
+						where a.userid = #userid#
+				           and exists (
+				               select 1 from sys_community c2
+				               where c2.commlev = #commlev#
+				               and c2.id = a.areaid
+				           )
+				        )
+					connect by prior c.id = c.parentid
+    		)
+		</isEmpty>
+		<isNotEmpty prepend="and" property="cardtype">
+			cardtype = #cardtype#
+		</isNotEmpty>
+		<isNotEmpty prepend="" property="keyword">
+			<isEqual property="fields" compareValue="cardno">
+				and cardno like '%'||#keyword#||'%'
+			</isEqual>
+			<isEqual property="fields" compareValue="rentname">
+				and exists(
+					select 1 from man_peo p where p.name like '%'||#keyword#||'%' and p.id=c.rentid
+				)
+			</isEqual>
+			<isEqual property="fields" compareValue="ownername">
+				and exists(
+					select 1 from man_peo p where p.name like '%'||#keyword#||'%' and p.id=c.ownerid
+				)
+			</isEqual>
+		</isNotEmpty>
+		<isNotEmpty prepend="" property="sortfield">
+			order by $sortfield$
+		</isNotEmpty>
+	</select>
+		
+</sqlMap>
